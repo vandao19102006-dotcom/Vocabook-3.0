@@ -110,10 +110,6 @@ input.f:disabled{opacity:.7}
 .exb{background:var(--bg);border-radius:12px;padding:12px 14px;margin-top:14px}
 .exq{font-weight:600;font-size:13px}.exv{color:var(--mut);font-size:12px;margin-top:4px}
 .rt-r{text-align:right;margin-top:14px}
-.rt-r .lnk+.lnk{margin-left:16px}
-.alts{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 2px}
-.alts button{background:transparent;border:1px solid var(--bd);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--tx)}
-.alts button.on{border-color:var(--pri);color:var(--pri)}
 .out{margin:18px 2px 8px}
 
 /* ---------- sổ tay ---------- */
@@ -151,7 +147,16 @@ input.f:disabled{opacity:.7}
 .prow span.g{color:var(--ok);font-weight:600}
 .pbar{height:6px;background:var(--bd);border-radius:9px;overflow:hidden;margin-bottom:14px}
 .pbar i{display:block;height:100%;background:var(--pri);border-radius:9px;transition:width .3s}
-.fcd{padding:16px 18px 18px;text-align:center;cursor:pointer;min-height:300px;display:flex;flex-direction:column}
+.fcd{padding:16px 18px 18px;text-align:center;cursor:pointer;min-height:300px;display:flex;flex-direction:column;touch-action:pan-y;user-select:none;-webkit-user-select:none;will-change:transform}
+#app{overflow-x:clip}
+.fcd.in-l{animation:fcinl .28s cubic-bezier(.2,.8,.3,1)}
+.fcd.in-r{animation:fcinr .28s cubic-bezier(.2,.8,.3,1)}
+.fcd.fl{animation:fcflip .32s ease-out;transform-origin:center}
+@keyframes fcinl{from{transform:translateX(55%) rotate(4deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes fcinr{from{transform:translateX(-55%) rotate(-4deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes fcflip{from{transform:perspective(900px) rotateY(-80deg);opacity:.2}to{transform:perspective(900px) rotateY(0);opacity:1}}
+.swh{display:flex;justify-content:center;align-items:center;gap:8px;color:var(--mut);font-size:11.5px;margin:-4px 0 4px}
+@media(prefers-reduced-motion:reduce){.fcd.in-l,.fcd.in-r,.fcd.fl{animation:none}}
 .fc-top{display:flex;justify-content:space-between;align-items:center}
 .fc-w{font-size:32px;font-weight:700;letter-spacing:-.5px;margin-top:28px;line-height:1.2;overflow-wrap:anywhere}
 .fc-i{color:var(--mut);font-size:12px;margin-top:8px}
@@ -427,10 +432,9 @@ function vLook(){
     if(!editing){
       h+=`<div class="wc-h"><div><div class="wd">${esc(d.word)}</div><div class="ipa">${d.ipa?`<span>${esc(d.ipa)}</span>`:''}${d.pos?`<span class="pill">${esc(d.pos)}</span>`:''}</div></div>${spk(d.word)}</div>
       <hr><div class="lab">Nghĩa tiếng Việt</div><div class="vi">${d.vi?esc(d.vi):'<span class="mut">Chưa có nghĩa, hãy chỉnh sửa để nhập</span>'}</div>
-      ${d.alts&&d.alts.length?`<div class="alts" role="group" aria-label="Nghĩa khác">${d.alts.map((a,i)=>`<button class="${viHas(d,a)?'on':''}" onclick="togVi(${i})">${viHas(d,a)?'✓ ':'+ '}${esc(a)}</button>`).join('')}</div>`:''}
       ${d.en?`<p class="en">${esc(d.en)}</p>`:''}
       ${d.ex?`<div class="exb"><div class="exq">“${esc(d.ex)}”</div>${d.exvi?`<div class="exv">${esc(d.exvi)}</div>`:''}</div>`:''}
-      <div class="rt-r">${d.senses&&d.senses.length>1?`<button class="lnk" onclick="nextSense()">${ic('shuf',13)} Định nghĩa khác (${d.si+1}/${d.senses.length})</button>`:''}<button class="lnk" onclick="editing=true;render()">${ic('pen',13)} Chỉnh sửa trước khi lưu</button></div>`;
+      <div class="rt-r"><button class="lnk" onclick="editing=true;render()">${ic('pen',13)} Chỉnh sửa trước khi lưu</button></div>`;
     }else{
       const f=(k,l,v)=>`<label class="fl" for="d_${k}">${l}</label><input class="f" id="d_${k}" value="${esc(v)}" oninput="draft.${k}=this.value">`;
       h+=f('word','Từ',d.word)+`<div class="row"><div style="flex:1">${f('ipa','Phiên âm',d.ipa)}</div><div style="flex:1">${f('pos','Loại từ',d.pos)}</div></div>`
@@ -446,53 +450,21 @@ function vLook(){
   return h+`</div>`;
 }
 const J=async u=>{const r=await fetch(u);if(!r.ok)throw 0;return r.json()};
-// Dịch Anh→Việt. trG: Google Translate (kèm danh sách nghĩa xếp theo độ phổ biến, nên "school" ra "trường học" chứ không phải "đàn cá").
-// Lỗi/hết lượt thì trM (MyMemory) làm dự phòng.
-const trG=async t=>{try{
-  const d=await J('https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&dt=bd&q='+encodeURIComponent(t));
-  const main=(d[0]||[]).map(x=>(x&&x[0])||'').join('').trim();
-  const alts=[];for(const e of d[1]||[])for(const w of e[1]||[])if(w&&!alts.includes(w))alts.push(w);
-  return main?{main,alts,pos:((d[1]||[])[0]||[])[0]||''}:null}catch(e){return null}};
-const trM=async t=>{try{const d=await J('https://api.mymemory.translated.net/get?q='+encodeURIComponent(t)+'&langpair=en|vi');return d.responseData.translatedText||''}catch(e){return ''}};
-const tr=async t=>{const g=await trG(t);return g?g.main:await trM(t)};
-const viParts=d=>(d.vi||'').split(/\s*[,;]\s*/).filter(Boolean);
-const viHas=(d,a)=>viParts(d).some(p=>p.toLowerCase()===a.toLowerCase());
-function togVi(i){const d=draft;if(!d||!d.alts||!d.alts[i])return;const a=d.alts[i],p=viParts(d),k=p.findIndex(x=>x.toLowerCase()===a.toLowerCase());
-  if(k>=0)p.splice(k,1);else p.push(a);d.vi=p.join(', ');render()}
-async function nextSense(){
-  const d=draft;if(!d||!d.senses||d.senses.length<2||busy)return;
-  d.si=(d.si+1)%d.senses.length;const s=d.senses[d.si];
-  d.pos=s.pos||d.pos;d.en=s.en;d.ex=s.ex;d.exvi='';busy=true;render();
-  const v=s.ex?await tr(s.ex):'';
-  if(draft===d){d.exvi=v;busy=false;render()}
-}
+const tr=async t=>{try{const d=await J('https://api.mymemory.translated.net/get?q='+encodeURIComponent(t)+'&langpair=en|vi');return d.responseData.translatedText||''}catch(e){return ''}};
 function speak(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.9;speechSynthesis.speak(u)}catch(e){}}
 async function lookup(){
   const w=($('#q')?$('#q').value:qv).trim();if(!w)return;
   qv=w;busy=true;msg='';draft=null;editing=false;render();
-  const d={word:w,ipa:'',pos:'',vi:'',en:'',ex:'',exvi:'',alts:[],senses:[],si:0};let miss=[];
-  const gp=trG(w);   // dịch song song với việc tra từ điển
+  const d={word:w,ipa:'',pos:'',vi:'',en:'',ex:'',exvi:''};let miss=[];
   try{
-    const es=await J('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(w));
-    const r=es[0];
+    const r=(await J('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(w)))[0];
     d.word=r.word||w;
-    for(const e of es){const t=e.phonetic||((e.phonetics||[]).find(p=>p.text)||{}).text;if(t){d.ipa=t;break}}
-    // Từ điển trả nhiều mục (mỗi nguồn gốc từ một mục) và mục đầu thường là nghĩa hiếm ("school" = đàn cá).
-    // Gom hết các nghĩa; nghĩa cùng loại từ với bản dịch và thuộc mục có nhiều định nghĩa nhất (thường là nghĩa chính) đứng trước.
-    const all=[];
-    for(const e of es){const n=(e.meanings||[]).reduce((a,m)=>a+(m.definitions||[]).length,0);
-      for(const m of e.meanings||[])for(const df of(m.definitions||[]).slice(0,2))
-        if(df.definition)all.push({pos:m.partOfSpeech||'',en:df.definition,ex:df.example||'',n})}
-    const g0=await gp;const gpos=g0?g0.pos:'';
-    all.sort((a,b)=>((b.pos===gpos)-(a.pos===gpos))||(b.n-a.n));
-    d.senses=all.slice(0,8);
-    const s=d.senses[0];
-    if(s){d.pos=s.pos;d.en=s.en;d.ex=s.ex||((d.senses.find(x=>x.ex&&x.pos===s.pos)||{}).ex||'')}
+    d.ipa=r.phonetic||((r.phonetics||[]).find(p=>p.text)||{}).text||'';
+    const m=(r.meanings||[])[0];
+    if(m){d.pos=m.partOfSpeech||'';d.en=((m.definitions||[])[0]||{}).definition||''}
+    for(const mm of r.meanings||[]){const x=(mm.definitions||[]).find(k=>k.example);if(x){d.ex=x.example;break}}
   }catch(e){miss.push('từ điển tiếng Anh')}
-  const g=await gp;
-  if(g){d.vi=g.main;d.alts=g.alts.filter(a=>a.toLowerCase()!==g.main.toLowerCase()).slice(0,8)}
-  else d.vi=await trM(w);
-  if(!d.vi)miss.push('nghĩa tiếng Việt');
+  d.vi=await tr(w);if(!d.vi)miss.push('nghĩa tiếng Việt');
   if(d.ex)d.exvi=await tr(d.ex);
   draft=d;msg=miss.length?'Không lấy được: '+miss.join(', ')+'. Bạn hãy tự nhập phần thiếu.':'Nghĩa tiếng Việt do dịch tự động, hãy kiểm tra trước khi lưu.';
   if(miss.length)editing=true;
@@ -570,21 +542,66 @@ function vFc(){
   }
   const w=fc.q[fc.i],n=fc.q.length;
   h+=`<div class="prow"><b>Thẻ ${fc.i+1} / ${n}</b><span>${fc.due?'Ôn từ đến hạn hôm nay':'Ôn luyện thêm'}</span></div><div class="pbar"><i style="width:${(fc.i+1)/n*100}%"></i></div>
-  <div class="card fcd" onclick="flip()"><div class="fc-top"><span class="lv ${lvCls(w.box)}">${lvName(w.box)}</span>${spk(w.w)}</div>
+  <div class="card fcd ${fc.an||''}" onclick="flip()"><div class="fc-top"><span class="lv ${lvCls(w.box)}">${lvName(w.box)}</span>${spk(w.w)}</div>
   <div class="fc-w">${esc(w.w)}</div><div class="fc-i">${esc(w.ipa)}${w.pos?` · ${esc(w.pos)}`:''}</div>`;
   if(fc.f)h+=`<hr><div class="fc-vi">${esc(w.vi)}</div>${w.en?`<p class="en">${esc(w.en)}</p>`:''}${w.ex?`<p class="fc-ex"><i>${esc(w.ex)}</i>${w.exvi?`<br>${esc(w.exvi)}`:''}</p>`:''}`;
   h+=`<div class="fc-h"><span class="lnk">${ic('redo',13)} ${fc.f?'Chạm để lật lại':'Chạm để xem nghĩa'}</span></div></div>
+  <div class="swh">${ic('arrow',13).replace('<svg','<svg style="transform:scaleX(-1)"')} <span style="color:var(--bad)">Vuốt trái: Chưa thuộc</span> · <span style="color:var(--ok)">Vuốt phải: Thuộc</span> ${ic('arrow',13)}</div>
   <div class="ask">Bạn nhớ từ này đến đâu?</div>
   <div class="rate${fc.f?'':' off'}">
    <button class="rb bad" ${fc.f?'':'disabled'} onclick="rate(0)">${ic('redo',18)}<b>Chưa thuộc</b><small>${ivLabel(w,0)}</small></button>
    <button class="rb mid" ${fc.f?'':'disabled'} onclick="rate(1)">${ic('minus',18)}<b>Mơ hồ</b><small>${ivLabel(w,1)}</small></button>
    <button class="rb ok" ${fc.f?'':'disabled'} onclick="rate(2)">${ic('check',18)}<b>Thuộc</b><small>${ivLabel(w,2)}</small></button></div>
   <div class="note">${ic('cal',14)}<span>Lịch ôn điều chỉnh theo mức độ nhớ của bạn. Không cần học lại mọi từ mỗi ngày.</span></div></div>`;
+  fc.an='';
   return h;
 }
-const flip=()=>{fc.f=!fc.f;render()};
+const flip=()=>{fc.f=!fc.f;fc.an='fl';render()};
 function startFc(){const ws=pool(),due=ws.filter(w=>w.due<=Date.now());if(!ws.length){render();return}fc={q:wpick(due.length?due:ws,20),i:0,f:false,due:due.length>0};render()}
-function rate(r){if(!fc.f)return;grade(fc.q[fc.i],r);fc.i++;fc.f=false;render()}
+function rate(r){if(!fc.q.length||fc.i>=fc.q.length)return;grade(fc.q[fc.i],r);fc.i++;fc.f=false;fc.an='in-l';render()}
+// Vuốt thẻ (chuột + cảm ứng): vuốt phải = Thuộc, vuốt trái = Chưa thuộc, chấm điểm và sang thẻ sau ngay
+(()=>{
+  let sw=null,busy=false,sup=false;
+  const reset=c=>{c.style.transition='transform .22s cubic-bezier(.2,.8,.3,1),box-shadow .22s';c.style.transform='';c.style.boxShadow='';setTimeout(()=>{c.style.transition=''},240)};
+  document.addEventListener('pointerdown',e=>{
+    if(busy||tab!=='fc'||(e.pointerType==='mouse'&&e.button!==0))return;
+    const c=e.target.closest&&e.target.closest('.fcd');if(!c||e.target.closest('button'))return;
+    sw={c,x:e.clientX,y:e.clientY,dx:0,t:Date.now(),lock:null,id:e.pointerId};
+  });
+  document.addEventListener('pointermove',e=>{
+    if(!sw||e.pointerId!==sw.id)return;
+    const dx=e.clientX-sw.x,dy=e.clientY-sw.y;
+    if(!sw.lock&&(Math.abs(dx)>8||Math.abs(dy)>8))sw.lock=Math.abs(dx)>Math.abs(dy)?'x':'y';
+    if(sw.lock!=='x')return;
+    sw.dx=dx;
+    const k=Math.min(1,Math.abs(dx)/(sw.c.offsetWidth*.25));
+    sw.c.style.transition='none';
+    sw.c.style.transform=`translateX(${dx}px) rotate(${dx/28}deg)`;
+    sw.c.style.boxShadow=`0 0 0 ${1+k*3}px color-mix(in srgb,${dx>0?'var(--ok)':'var(--bad)'} ${Math.round(k*100)}%,transparent)`;
+  });
+  const end=e=>{
+    if(!sw||e.pointerId!==sw.id)return;
+    const {c,dx,lock,t}=sw;sw=null;
+    if(lock!=='x')return;
+    sup=true;setTimeout(()=>{sup=false},60);   // chặn "click" tự sinh sau khi kéo, tránh lật thẻ nhầm
+    if(e.type==='pointercancel'){reset(c);return}
+    const v=Math.abs(dx)/Math.max(1,Date.now()-t),d=dx>0?1:-1;
+    if(Math.abs(dx)>c.offsetWidth*.25||(v>.5&&Math.abs(dx)>30)){
+      busy=true;
+      c.style.transition='transform .18s ease-in,opacity .18s';
+      c.style.transform=`translateX(${d*(innerWidth+40)}px) rotate(${d*12}deg)`;c.style.opacity='0';
+      setTimeout(()=>{busy=false;rate(d>0?2:0)},170);
+    }else reset(c);
+  };
+  document.addEventListener('pointerup',end);
+  document.addEventListener('pointercancel',end);
+  document.addEventListener('click',e=>{if(sup){e.stopPropagation();e.preventDefault();sup=false}},true);
+  document.addEventListener('keydown',e=>{
+    if(tab!=='fc'||busy||/INPUT|SELECT|TEXTAREA/.test((e.target.tagName||'')))return;
+    if(e.key==='ArrowRight')rate(2);else if(e.key==='ArrowLeft')rate(0);
+    else if(e.key===' '&&fc.q.length&&fc.i<fc.q.length){e.preventDefault();flip()}
+  });
+})();
 
 /* ================= Bài tập ================= */
 function mkQ(w,ws,mode){
@@ -945,7 +962,7 @@ function vSp(){
   }else h+=`<div class="card"><p class="mut">Phần này chưa có câu hỏi nào.</p></div>`;
   h+=spQHist(q);
   h+=`<div class="micw">`+(sp.busy
-    ?`<div class="spin"></div><b>Đang chấm điểm…</b><p>${sp.ahead>0?'Đang xếp hàng, còn '+sp.ahead+' bài phía trước. ':''}Có thể mất 30–90 giây. Đừng đóng ứng dụng.</p><button class="btn s" style="width:auto;margin:14px auto 0" onclick="spStop()">${ic('x',14)} Dừng chấm</button>`
+    ?`<div class="spin"></div><b>Đang chấm điểm…</b><p>${sp.ahead>0?'Đang xếp hàng, còn '+sp.ahead+' bài phía trước. ':''}Có thể mất 30–90 giây. Đừng đóng ứng dụng.</p>`
     :spMicHtml(q))+`</div>`;
   if(sp.err)h+=`<p class="err" style="margin-top:14px">${esc(sp.err)}</p>`+(/đang được chấm/.test(sp.err)&&!lock?`<button class="lnk" onclick="spCancel()">Hủy bài đang kẹt rồi thử lại</button>`:'');
   if(sp.res)h+=`<div style="height:18px"></div>`+spResult(sp.res);
@@ -1120,14 +1137,12 @@ async function spToggle(){
     sp.timer=setInterval(()=>{const ms=spEl(),e=$('#sptime');if(e)e.textContent=spFmt(ms);if(ms>=170000&&sp.mr.state!=='inactive')sp.mr.stop()},500);
   }catch(e){sp.err='Không mở được micro. Hãy cho phép quyền micro (trang phải chạy bằng HTTPS).';render()}
 }
-let spCtl=null;   // AbortController của lượt chấm đang chạy (cho nút "Dừng chấm")
-function spStop(){const c=spCtl;if(!c||c.userStop)return;c.userStop=true;c.abort()}
 async function spSend(blob){
   const q=curQ();sp.busy=true;sp.err='';sp.ahead=null;render();
   const fd=new FormData();
   fd.append('file',blob,'answer.'+(blob.type.includes('mp4')?'m4a':'webm'));
   fd.append('part',sp.part);fd.append('question',q?q.text:'');
-  const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15*60*1000);spCtl=ctl;
+  const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15*60*1000);
   try{
     // 1) gửi bài, máy chủ xếp vào hàng đợi và trả job_id ngay
     const job=await api('/assess',{method:'POST',body:fd,signal:ctl.signal});
@@ -1135,7 +1150,7 @@ async function spSend(blob){
     // 2) hỏi kết quả mỗi 2 giây (chịu được vài lần rớt mạng ngắn)
     let netFails=0;
     for(;;){
-      await new Promise(r=>{const t=setTimeout(r,1000);ctl.signal.addEventListener('abort',()=>{clearTimeout(t);r()},{once:true})});
+      await new Promise(r=>setTimeout(r,1000));
       let s2;
       try{s2=await api('/assess/'+job.job_id,{signal:ctl.signal});netFails=0}
       catch(e){if(e.net&&++netFails<8)continue;throw e}
@@ -1147,12 +1162,10 @@ async function spSend(blob){
     spHAdd(q,blob);
   }catch(e){
     if(e.net&&DEV_CFG)sp.cfg=true;
-    if(ctl.userStop)sp.err='';                                   // tự bấm Dừng: không phải lỗi
-    else if(!e.auth)sp.err='Không chấm được: '+(e.name==='AbortError'?'quá thời gian chờ':e.message);
+    if(!e.auth)sp.err='Không chấm được: '+(e.name==='AbortError'?'quá thời gian chờ':e.message);
     if(e.name==='AbortError'||e.net)api('/assess/cancel',{method:'POST'}).catch(()=>{});  // đừng để job mồ côi chặn lần sau
-    if(ctl.userStop)setTimeout(()=>{if(!sp.busy)api('/assess/cancel',{method:'POST'}).catch(()=>{})},2500);  // phòng khi bài vừa kịp vào hàng đợi
   }
-  clearTimeout(to);if(spCtl===ctl)spCtl=null;sp.busy=false;sp.ahead=null;render();
+  clearTimeout(to);sp.busy=false;sp.ahead=null;render();
 }
 async function spImprove(){
   const r=sp.res;if(!r||!r.jobId||r.impBusy)return;

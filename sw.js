@@ -2,7 +2,7 @@
 // Chiến lược "mạng trước, cache sau": online thì luôn lấy bản mới nhất (nên đổi config.js hay index.html là có hiệu lực ngay),
 // mất mạng mới dùng bản đã lưu. KHÔNG đụng tới các request sang domain khác (API chấm điểm, font, từ điển).
 // Muốn buộc mọi người bỏ cache cũ: tăng số phiên bản V.
-const V = 'vocabook-v3';
+const V = 'vocabook-v5';
 const SHELL = ['./', 'index.html', 'config.js', 'manifest.json', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
