@@ -18,7 +18,7 @@
 <p class="note">Bản này là mẫu soạn theo cách ứng dụng đang hoạt động. Người vận hành cần điền thông tin liên hệ, đọc lại cho khớp thực tế, và tham khảo ý kiến luật sư nếu cần.</p>
 
 <h2>1. Ai vận hành ứng dụng</h2>
-<p>VocaBook do [TÊN BẠN / TỔ CHỨC] vận hành. Liên hệ: [EMAIL LIÊN HỆ].</p>
+<p>VocaBook do <div adaodz=""></div> vận hành. Liên hệ: <div vandao19102006@gmail="vandao19102006@gmail"></div>.</p>
 
 <h2>2. Dữ liệu ở lại trên thiết bị của bạn</h2>
 <p>Sổ từ vựng, flashcard, lịch sử và cài đặt được lưu trong trình duyệt/thiết bị của bạn (localStorage), không gửi lên máy chủ của chúng tôi. Xóa dữ liệu trình duyệt hoặc gỡ ứng dụng có thể làm mất dữ liệu này, vì vậy hãy dùng chức năng <b>Sao lưu → Xuất</b>.</p>
@@ -29,8 +29,9 @@
   <li><b>Bản ghi âm:</b> chỉ dùng để chấm điểm. Máy chủ tự xóa file ghi âm ngay sau khi chấm xong (hoặc sau tối đa khoảng 1 giờ nếu có sự cố).</li>
   <li><b>Kết quả chấm:</b> văn bản nhận dạng giọng nói, điểm ước lượng và góp ý được giữ tối đa 7 ngày để bạn xem lại và để tính hạn mức lượt chấm, sau đó bị xóa. Lịch sử điểm hiển thị trong ứng dụng nằm trên thiết bị của bạn.</li>
   <li><b>Dịch vụ AI bên thứ ba:</b> <u>văn bản nhận dạng được từ bài nói của bạn</u> (không phải file âm thanh) được gửi tới Google Gemini để nhận xét về từ vựng, ngữ pháp và độ trôi chảy.</li>
-  <li><b>Chấm Writing:</b> <u>nội dung bài viết</u> (và ảnh biểu đồ nếu bạn đính kèm cho Task 1) được gửi tới Google Gemini để chấm điểm, sửa lỗi và viết bản cải thiện. Máy chủ của chúng tôi không lưu bài viết hay ảnh.</li>
-  <li><b>Lịch sử luyện Speaking và Writing</b> (kết quả chi tiết, bản ghi âm bài nói, bài viết) chỉ được lưu trong trình duyệt trên thiết bị của bạn (IndexedDB); bạn có thể xóa từng bài hoặc toàn bộ trong ứng dụng. Xóa tài khoản cũng xóa phần này trên thiết bị đang dùng.</li>
+  <li><b>Chấm Writing:</b> <u>nội dung bài viết</u> (và ảnh biểu đồ nếu bạn đính kèm cho Task 1) được gửi tới Google Gemini để chấm điểm, sửa lỗi và viết bản cải thiện. Sau khi chấm xong, bài viết, đề bài, điểm, phản hồi và các bản cải thiện được <u>lưu vào tài khoản của bạn trên máy chủ của chúng tôi</u> (kèm ảnh biểu đồ Task 1 nếu bạn đính kèm) để bạn xem lại ở mục lịch sử.</li>
+  <li><b>Lịch sử Writing</b> được lưu trên máy chủ theo tài khoản của bạn: chỉ tài khoản của bạn đọc được (không ai khác trong ứng dụng truy cập được), và bạn có thể xóa từng bài hoặc toàn bộ lịch sử bất cứ lúc nào trong ứng dụng; bài đã xóa bị xóa vĩnh viễn khỏi máy chủ. Các bản sửa của một bài được lưu thành bài riêng, bài gốc và điểm gốc không bị ghi đè. Bài Writing cũ đã lưu trên trình duyệt chỉ được đưa lên máy chủ khi chính bạn bấm &ldquo;Đồng bộ lên tài khoản&rdquo;.</li>
+  <li><b>Lịch sử Speaking</b> (kết quả chi tiết, bản ghi âm bài nói) chỉ được lưu trong trình duyệt trên thiết bị của bạn (IndexedDB); bạn có thể xóa từng bài hoặc toàn bộ trong ứng dụng. Bản nháp bài Writing đang viết dở chỉ lưu trong trình duyệt, tách riêng theo từng tài khoản.</li>
 </ul>
 
 <h2>4. Dịch vụ bên thứ ba khi tra từ</h2>
@@ -38,7 +39,7 @@
 
 <h2>5. Quyền của bạn</h2>
 <ul>
-  <li>Bạn có thể tự <b>xóa tài khoản</b> và dữ liệu liên quan trên máy chủ bất cứ lúc nào trong màn hình Luyện Speaking.</li>
+  <li>Bạn có thể tự <b>xóa tài khoản</b> bất cứ lúc nào trong màn hình Luyện Speaking; việc này xóa vĩnh viễn dữ liệu của bạn trên máy chủ, gồm cả toàn bộ bài Writing, phản hồi, bản cải thiện và ảnh biểu đồ đã lưu.</li>
   <li>Bạn có thể đổi mật khẩu trong cùng màn hình.</li>
   <li>Muốn hỏi, yêu cầu truy cập hoặc xóa dữ liệu: liên hệ [EMAIL LIÊN HỆ].</li>
 </ul>

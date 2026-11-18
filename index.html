@@ -110,6 +110,10 @@ input.f:disabled{opacity:.7}
 .exb{background:var(--bg);border-radius:12px;padding:12px 14px;margin-top:14px}
 .exq{font-weight:600;font-size:13px}.exv{color:var(--mut);font-size:12px;margin-top:4px}
 .rt-r{text-align:right;margin-top:14px}
+.rt-r .lnk+.lnk{margin-left:16px}
+.alts{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 2px}
+.alts button{background:transparent;border:1px solid var(--bd);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--tx)}
+.alts button.on{border-color:var(--pri);color:var(--pri)}
 .out{margin:18px 2px 8px}
 
 /* ---------- sổ tay ---------- */
@@ -230,6 +234,32 @@ input.f:disabled{opacity:.7}
 .crit .row{justify-content:space-between;font-size:12.5px;margin-bottom:6px}
 .crit b{font-weight:700}
 .crit .pbar{margin:0}
+.cdl{font-size:12.5px;margin:6px 0 10px}.cdl b{display:block;font-size:11px;letter-spacing:.3px;text-transform:uppercase;color:var(--mut);margin-bottom:3px}
+.cdq{font-size:12.5px;margin:0 0 8px;padding-left:10px;border-left:2px solid var(--tintb)}
+.cdw{font-size:12px;color:var(--warn);margin:4px 0 8px}
+.seg.s5 button{font-size:11px;padding:9px 2px;line-height:1.25}
+.dg{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin-left:4px;vertical-align:middle}
+.dfd{background:var(--badbg);color:var(--bad);border-radius:4px;padding:0 2px}
+.dfi{background:var(--okbg);color:var(--ok);border-radius:4px;padding:0 2px;font-weight:600}
+.exc{padding:12px 0;border-top:1px solid var(--bd)}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cmph{font-size:11px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--mut);margin-bottom:5px}
+.cmpc{background:var(--tint);border-radius:12px;padding:10px;font-size:12.5px;line-height:1.85;white-space:pre-wrap;overflow-wrap:anywhere;max-height:70vh;overflow:auto}
+button.pill{cursor:pointer;border:0}
+@media(max-width:430px){.cmp{grid-template-columns:1fr}}
+.pgs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+.pgs b{display:block;font-size:22px;font-weight:700;color:var(--pri);line-height:1.1}
+.pgs span{display:block;font-size:10.5px;color:var(--mut);margin-top:4px}
+@media(max-width:380px){.pgs{grid-template-columns:repeat(2,1fr);row-gap:14px}}
+.chg{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.chg.up{color:var(--ok);background:var(--okbg)}.chg.dn{color:var(--bad);background:var(--badbg)}.chg.eq{color:var(--mut);background:var(--seg)}
+.pch{width:100%;height:auto;display:block;overflow:visible}
+.pch .gl{stroke:var(--bd);stroke-width:1}.pch .ax{fill:var(--mut);font-size:10px}
+.pch .ln{fill:none;stroke:var(--pri);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.pch .rl{fill:none;stroke:var(--pri);stroke-width:1.4;stroke-dasharray:4 4;opacity:.55}
+.pch .pt{fill:var(--card);stroke:var(--pri);stroke-width:2;cursor:pointer}
+.pch .pt:hover,.pch .pt:focus{fill:var(--pri);outline:none}
+.pkd{display:flex;justify-content:space-between;gap:10px;font-size:12px}
 .li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--bd)}
 .li:last-child{border:0}
 .li>div{min-width:0;overflow-wrap:anywhere}
@@ -364,6 +394,7 @@ const IC={
  up:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>',
  spark:'<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 3v4M17 5h4"/>',
  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ trend:'<path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 6-7"/>',
  shuf:'<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',
  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
  arrow:'<path d="M5 12h14M12 5l7 7-7 7"/>',
@@ -432,9 +463,10 @@ function vLook(){
     if(!editing){
       h+=`<div class="wc-h"><div><div class="wd">${esc(d.word)}</div><div class="ipa">${d.ipa?`<span>${esc(d.ipa)}</span>`:''}${d.pos?`<span class="pill">${esc(d.pos)}</span>`:''}</div></div>${spk(d.word)}</div>
       <hr><div class="lab">Nghĩa tiếng Việt</div><div class="vi">${d.vi?esc(d.vi):'<span class="mut">Chưa có nghĩa, hãy chỉnh sửa để nhập</span>'}</div>
+      ${d.alts&&d.alts.length?`<div class="alts" role="group" aria-label="Nghĩa khác">${d.alts.map((a,i)=>`<button class="${viHas(d,a)?'on':''}" onclick="togVi(${i})">${viHas(d,a)?'✓ ':'+ '}${esc(a)}</button>`).join('')}</div>`:''}
       ${d.en?`<p class="en">${esc(d.en)}</p>`:''}
       ${d.ex?`<div class="exb"><div class="exq">“${esc(d.ex)}”</div>${d.exvi?`<div class="exv">${esc(d.exvi)}</div>`:''}</div>`:''}
-      <div class="rt-r"><button class="lnk" onclick="editing=true;render()">${ic('pen',13)} Chỉnh sửa trước khi lưu</button></div>`;
+      <div class="rt-r">${d.senses&&d.senses.length>1?`<button class="lnk" onclick="nextSense()">${ic('shuf',13)} Định nghĩa khác (${d.si+1}/${d.senses.length})</button>`:''}<button class="lnk" onclick="editing=true;render()">${ic('pen',13)} Chỉnh sửa trước khi lưu</button></div>`;
     }else{
       const f=(k,l,v)=>`<label class="fl" for="d_${k}">${l}</label><input class="f" id="d_${k}" value="${esc(v)}" oninput="draft.${k}=this.value">`;
       h+=f('word','Từ',d.word)+`<div class="row"><div style="flex:1">${f('ipa','Phiên âm',d.ipa)}</div><div style="flex:1">${f('pos','Loại từ',d.pos)}</div></div>`
@@ -450,21 +482,53 @@ function vLook(){
   return h+`</div>`;
 }
 const J=async u=>{const r=await fetch(u);if(!r.ok)throw 0;return r.json()};
-const tr=async t=>{try{const d=await J('https://api.mymemory.translated.net/get?q='+encodeURIComponent(t)+'&langpair=en|vi');return d.responseData.translatedText||''}catch(e){return ''}};
+// Dịch Anh→Việt. trG: Google Translate (kèm danh sách nghĩa xếp theo độ phổ biến, nên "school" ra "trường học" chứ không phải "đàn cá").
+// Lỗi/hết lượt thì trM (MyMemory) làm dự phòng.
+const trG=async t=>{try{
+  const d=await J('https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&dt=bd&q='+encodeURIComponent(t));
+  const main=(d[0]||[]).map(x=>(x&&x[0])||'').join('').trim();
+  const alts=[];for(const e of d[1]||[])for(const w of e[1]||[])if(w&&!alts.includes(w))alts.push(w);
+  return main?{main,alts,pos:((d[1]||[])[0]||[])[0]||''}:null}catch(e){return null}};
+const trM=async t=>{try{const d=await J('https://api.mymemory.translated.net/get?q='+encodeURIComponent(t)+'&langpair=en|vi');return d.responseData.translatedText||''}catch(e){return ''}};
+const tr=async t=>{const g=await trG(t);return g?g.main:await trM(t)};
+const viParts=d=>(d.vi||'').split(/\s*[,;]\s*/).filter(Boolean);
+const viHas=(d,a)=>viParts(d).some(p=>p.toLowerCase()===a.toLowerCase());
+function togVi(i){const d=draft;if(!d||!d.alts||!d.alts[i])return;const a=d.alts[i],p=viParts(d),k=p.findIndex(x=>x.toLowerCase()===a.toLowerCase());
+  if(k>=0)p.splice(k,1);else p.push(a);d.vi=p.join(', ');render()}
+async function nextSense(){
+  const d=draft;if(!d||!d.senses||d.senses.length<2||busy)return;
+  d.si=(d.si+1)%d.senses.length;const s=d.senses[d.si];
+  d.pos=s.pos||d.pos;d.en=s.en;d.ex=s.ex;d.exvi='';busy=true;render();
+  const v=s.ex?await tr(s.ex):'';
+  if(draft===d){d.exvi=v;busy=false;render()}
+}
 function speak(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.9;speechSynthesis.speak(u)}catch(e){}}
 async function lookup(){
   const w=($('#q')?$('#q').value:qv).trim();if(!w)return;
   qv=w;busy=true;msg='';draft=null;editing=false;render();
-  const d={word:w,ipa:'',pos:'',vi:'',en:'',ex:'',exvi:''};let miss=[];
+  const d={word:w,ipa:'',pos:'',vi:'',en:'',ex:'',exvi:'',alts:[],senses:[],si:0};let miss=[];
+  const gp=trG(w);   // dịch song song với việc tra từ điển
   try{
-    const r=(await J('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(w)))[0];
+    const es=await J('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(w));
+    const r=es[0];
     d.word=r.word||w;
-    d.ipa=r.phonetic||((r.phonetics||[]).find(p=>p.text)||{}).text||'';
-    const m=(r.meanings||[])[0];
-    if(m){d.pos=m.partOfSpeech||'';d.en=((m.definitions||[])[0]||{}).definition||''}
-    for(const mm of r.meanings||[]){const x=(mm.definitions||[]).find(k=>k.example);if(x){d.ex=x.example;break}}
+    for(const e of es){const t=e.phonetic||((e.phonetics||[]).find(p=>p.text)||{}).text;if(t){d.ipa=t;break}}
+    // Từ điển trả nhiều mục (mỗi nguồn gốc từ một mục) và mục đầu thường là nghĩa hiếm ("school" = đàn cá).
+    // Gom hết các nghĩa; nghĩa cùng loại từ với bản dịch và thuộc mục có nhiều định nghĩa nhất (thường là nghĩa chính) đứng trước.
+    const all=[];
+    for(const e of es){const n=(e.meanings||[]).reduce((a,m)=>a+(m.definitions||[]).length,0);
+      for(const m of e.meanings||[])for(const df of(m.definitions||[]).slice(0,2))
+        if(df.definition)all.push({pos:m.partOfSpeech||'',en:df.definition,ex:df.example||'',n})}
+    const g0=await gp;const gpos=g0?g0.pos:'';
+    all.sort((a,b)=>((b.pos===gpos)-(a.pos===gpos))||(b.n-a.n));
+    d.senses=all.slice(0,8);
+    const s=d.senses[0];
+    if(s){d.pos=s.pos;d.en=s.en;d.ex=s.ex||((d.senses.find(x=>x.ex&&x.pos===s.pos)||{}).ex||'')}
   }catch(e){miss.push('từ điển tiếng Anh')}
-  d.vi=await tr(w);if(!d.vi)miss.push('nghĩa tiếng Việt');
+  const g=await gp;
+  if(g){d.vi=g.main;d.alts=g.alts.filter(a=>a.toLowerCase()!==g.main.toLowerCase()).slice(0,8)}
+  else d.vi=await trM(w);
+  if(!d.vi)miss.push('nghĩa tiếng Việt');
   if(d.ex)d.exvi=await tr(d.ex);
   draft=d;msg=miss.length?'Không lấy được: '+miss.join(', ')+'. Bạn hãy tự nhập phần thiếu.':'Nghĩa tiếng Việt do dịch tự động, hãy kiểm tra trước khi lưu.';
   if(miss.length)editing=true;
@@ -849,7 +913,7 @@ async function authGo(){
   au.busy=true;au.err='';render();
   try{
     const d=await api('/auth/'+(au.mode==='reg'?'register':'login'),{method:'POST',json:{username:u,password:p}});
-    AU={token:d.token,user:d.user};authSave();au.user='';sp.err='';
+    AU={token:d.token,user:d.user};authSave();au.user='';sp.err='';wrLoadDraft();
     au.busy=false;render();spLoadQs();return;
   }catch(e){au.err=e.message;if(e.net)sp.cfg=true}
   au.busy=false;render();
@@ -962,7 +1026,7 @@ function vSp(){
   }else h+=`<div class="card"><p class="mut">Phần này chưa có câu hỏi nào.</p></div>`;
   h+=spQHist(q);
   h+=`<div class="micw">`+(sp.busy
-    ?`<div class="spin"></div><b>Đang chấm điểm…</b><p>${sp.ahead>0?'Đang xếp hàng, còn '+sp.ahead+' bài phía trước. ':''}Có thể mất 30–90 giây. Đừng đóng ứng dụng.</p>`
+    ?`<div class="spin"></div><b>Đang chấm điểm…</b><p>${sp.ahead>0?'Đang xếp hàng, còn '+sp.ahead+' bài phía trước. ':''}Có thể mất 30–90 giây. Đừng đóng ứng dụng.</p><button class="btn s" style="width:auto;margin:14px auto 0" onclick="spStop()">${ic('x',14)} Dừng chấm</button>`
     :spMicHtml(q))+`</div>`;
   if(sp.err)h+=`<p class="err" style="margin-top:14px">${esc(sp.err)}</p>`+(/đang được chấm/.test(sp.err)&&!lock?`<button class="lnk" onclick="spCancel()">Hủy bài đang kẹt rồi thử lại</button>`:'');
   if(sp.res)h+=`<div style="height:18px"></div>`+spResult(sp.res);
@@ -1137,12 +1201,14 @@ async function spToggle(){
     sp.timer=setInterval(()=>{const ms=spEl(),e=$('#sptime');if(e)e.textContent=spFmt(ms);if(ms>=170000&&sp.mr.state!=='inactive')sp.mr.stop()},500);
   }catch(e){sp.err='Không mở được micro. Hãy cho phép quyền micro (trang phải chạy bằng HTTPS).';render()}
 }
+let spCtl=null;   // AbortController của lượt chấm đang chạy (cho nút "Dừng chấm")
+function spStop(){const c=spCtl;if(!c||c.userStop)return;c.userStop=true;c.abort()}
 async function spSend(blob){
   const q=curQ();sp.busy=true;sp.err='';sp.ahead=null;render();
   const fd=new FormData();
   fd.append('file',blob,'answer.'+(blob.type.includes('mp4')?'m4a':'webm'));
   fd.append('part',sp.part);fd.append('question',q?q.text:'');
-  const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15*60*1000);
+  const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15*60*1000);spCtl=ctl;
   try{
     // 1) gửi bài, máy chủ xếp vào hàng đợi và trả job_id ngay
     const job=await api('/assess',{method:'POST',body:fd,signal:ctl.signal});
@@ -1150,7 +1216,7 @@ async function spSend(blob){
     // 2) hỏi kết quả mỗi 2 giây (chịu được vài lần rớt mạng ngắn)
     let netFails=0;
     for(;;){
-      await new Promise(r=>setTimeout(r,1000));
+      await new Promise(r=>{const t=setTimeout(r,1000);ctl.signal.addEventListener('abort',()=>{clearTimeout(t);r()},{once:true})});
       let s2;
       try{s2=await api('/assess/'+job.job_id,{signal:ctl.signal});netFails=0}
       catch(e){if(e.net&&++netFails<8)continue;throw e}
@@ -1162,10 +1228,12 @@ async function spSend(blob){
     spHAdd(q,blob);
   }catch(e){
     if(e.net&&DEV_CFG)sp.cfg=true;
-    if(!e.auth)sp.err='Không chấm được: '+(e.name==='AbortError'?'quá thời gian chờ':e.message);
+    if(ctl.userStop)sp.err='';                                   // tự bấm Dừng: không phải lỗi
+    else if(!e.auth)sp.err='Không chấm được: '+(e.name==='AbortError'?'quá thời gian chờ':e.message);
     if(e.name==='AbortError'||e.net)api('/assess/cancel',{method:'POST'}).catch(()=>{});  // đừng để job mồ côi chặn lần sau
+    if(ctl.userStop)setTimeout(()=>{if(!sp.busy)api('/assess/cancel',{method:'POST'}).catch(()=>{})},2500);  // phòng khi bài vừa kịp vào hàng đợi
   }
-  clearTimeout(to);sp.busy=false;sp.ahead=null;render();
+  clearTimeout(to);if(spCtl===ctl)spCtl=null;sp.busy=false;sp.ahead=null;render();
 }
 async function spImprove(){
   const r=sp.res;if(!r||!r.jobId||r.impBusy)return;
@@ -1200,14 +1268,14 @@ async function spChangePw(){
   catch(e){alert(e.message)}
 }
 async function spDelAcc(){
-  if(!confirm('Xóa vĩnh viễn tài khoản và dữ liệu luyện nói trên máy chủ, cùng lịch sử bài nói, bản ghi âm và bài Writing đã lưu trên máy này? Sổ từ vựng trên máy bạn không bị ảnh hưởng.'))return;
+  if(!confirm('Xóa vĩnh viễn tài khoản cùng toàn bộ dữ liệu trên máy chủ (câu hỏi luyện nói, bài Writing đã chấm và các bản cải thiện), và lịch sử bài nói, bản ghi âm đã lưu trên máy này? Sổ từ vựng trên máy bạn không bị ảnh hưởng.'))return;
   try{const un=spUser();await api('/me',{method:'DELETE'});await spHPurgeUser(un);await wrHPurgeUser(un);spLogout();alert('Đã xóa tài khoản.');render()}
   catch(e){alert(e.message)}
 }
 
 /* ================= Writing (IELTS) =================
    Chấm theo 4 tiêu chí công khai của IELTS (Task Achievement/Response, Coherence & Cohesion, Lexical Resource,
-   Grammatical Range & Accuracy), sửa lỗi ngay trong bài và viết lại bản cải thiện. Bài viết không lưu trên máy chủ. */
+   Grammatical Range & Accuracy), sửa lỗi ngay trong bài và viết lại bản cải thiện. Bài đã chấm được lưu theo tài khoản trên máy chủ (bảng writing_essays) để xem lại. */
 const WR_KINDS={
   ac1:{short:'Task 1 · Academic',crit:'Task Achievement',min:150},
   gt1:{short:'Task 1 · General',crit:'Task Achievement',min:150},
@@ -1226,41 +1294,121 @@ const WR_SAMPLES={
        'You work for a company and have noticed that the office is too noisy to work in.\nWrite a letter to your manager. In your letter:\n• describe the problem\n• explain how it affects your work\n• suggest what could be done\n\nWrite at least 150 words. You do NOT need to write any addresses.\nBegin your letter as follows: Dear Sir or Madam,']};
 const WR_WORD=/[A-Za-z0-9]+(?:['’\-][A-Za-z0-9]+)*/g;
 const wrWords=s=>((s||'').match(WR_WORD)||[]).length;
-let wr={kind:'t2',q:'',essay:'',img:null,imgUrl:'',busy:false,err:'',cur:null,hist:false,why:{}};
-try{const d=JSON.parse(localStorage.getItem('wr_draft')||'{}');if(WR_KINDS[d.kind])wr.kind=d.kind;wr.q=String(d.q||'');wr.essay=String(d.essay||'')}catch(e){}
-const wrSaveDraft=()=>{try{localStorage.setItem('wr_draft',JSON.stringify({kind:wr.kind,q:wr.q,essay:wr.essay}))}catch(e){}};
-function wrReset(){wr.cur=null;wr.hist=false;wr.err='';wr.why={}}
+let wr={kind:'t2',q:'',essay:'',img:null,imgUrl:'',busy:false,err:'',cur:null,hist:false,why:{},cd:{},iv:'',ib:{},ie:{},cmp:'',parent:null,pinfo:null,prog:false};
+/* Bản nháp lưu theo từng tài khoản (không dùng chung một khóa): người khác đăng nhập trên cùng thiết bị không thấy bài đang viết dở. */
+const wrDraftKey=()=>'wr_draft:'+spUser();
+function wrLoadDraft(){
+  wr.q='';wr.essay='';
+  try{
+    if(!AU)return;
+    const leg=localStorage.getItem('wr_draft');   // khóa dùng chung của bản cũ: chuyển cho tài khoản đang đăng nhập rồi xóa
+    if(leg!==null){if(localStorage.getItem(wrDraftKey())===null)localStorage.setItem(wrDraftKey(),leg);localStorage.removeItem('wr_draft')}
+    const d=JSON.parse(localStorage.getItem(wrDraftKey())||'{}');
+    if(WR_KINDS[d.kind])wr.kind=d.kind;wr.q=String(d.q||'');wr.essay=String(d.essay||'');
+  }catch(e){}
+}
+wrLoadDraft();
+const wrSaveDraft=()=>{if(!AU)return;try{localStorage.setItem(wrDraftKey(),JSON.stringify({kind:wr.kind,q:wr.q,essay:wr.essay}))}catch(e){}};
+const wrNormEssay=t=>String(t||'').replace(/\r\n?/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+function wrReset(){   // đăng xuất/hết phiên: xóa mọi dữ liệu Writing của tài khoản cũ khỏi bộ nhớ
+  wr.cur=null;wr.hist=false;wr.err='';wr.why={};wr.cd={};wr.iv='';wr.parent=null;wr.pinfo=null;wr.q='';wr.essay='';wr.ib={};wr.ie={};
+  if(wr.imgUrl)URL.revokeObjectURL(wr.imgUrl);wr.img=null;wr.imgUrl='';
+  WRS.items=[];WRS.total=0;WRS.more=false;WRS.loaded=false;WRS.loading=false;WRS.err='';WRS.sync='';WRS.syncing=false;WRS.opening='';WRS.seq++;WRS.f=wrHDefaults();
+  wr.prog=false;wrPReset();
+}
 
-/* ---- Lịch sử Writing (IndexedDB, chỉ trên máy bạn) ---- */
-const WR_HMAX=100;
+/* ---- Lịch sử Writing: lưu trên máy chủ theo tài khoản (Phase 4), chỉ chủ tài khoản xem được.
+   IndexedDB cũ chỉ còn dùng để người dùng chủ động đồng bộ các bài đã lưu trên máy này (trước Phase 4) lên tài khoản. ---- */
 const WRH={list:[],ready:false,err:false,db:null};
 const wrdb=()=>WRH.db||(WRH.db=new Promise((ok,no)=>{try{const r=indexedDB.open('vocabook_wr',1);r.onupgradeneeded=()=>r.result.createObjectStore('h',{keyPath:'id'});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}catch(e){no(e)}}));
 const wrTx=(mode,fn)=>wrdb().then(d=>new Promise((ok,no)=>{const tx=d.transaction('h',mode);let o;try{o=fn(tx.objectStore('h'))}catch(e){no(e);return}tx.oncomplete=()=>ok(o&&o.result);tx.onerror=tx.onabort=()=>no(tx.error)}));
-const wrL=()=>WRH.list.filter(r=>r.u===spUser());
+const wrL=()=>WRH.list.filter(r=>r.u===spUser());   // bài cũ trên máy này của tài khoản đang đăng nhập
 function wrRefresh(){const a=document.activeElement&&document.activeElement.tagName;if(tab==='wr'&&!wr.busy&&a!=='INPUT'&&a!=='TEXTAREA'&&a!=='SELECT')render()}
 wrTx('readonly',s=>s.getAll()).then(a=>{WRH.list=(a||[]).sort((x,y)=>y.t-x.t);WRH.ready=true;wrRefresh()}).catch(()=>{WRH.ready=true;WRH.err=true;wrRefresh()});
-function wrHAdd(c){
-  const rec={id:'w'+Date.now().toString(36)+uid(),t:Date.now(),u:spUser(),kind:c.kind,q:c.q,essay:c.essay,res:c.res};
-  WRH.list=[rec,...WRH.list];c.id=rec.id;c.t=rec.t;
-  wrTx('readwrite',s=>s.put(rec)).catch(()=>{WRH.err=true});
-  if(WRH.list.length>WR_HMAX){const drop=WRH.list.slice(WR_HMAX);WRH.list=WRH.list.slice(0,WR_HMAX);wrTx('readwrite',s=>drop.forEach(x=>s.delete(x.id))).catch(()=>{})}
-}
-function wrHDel(id){
-  if(!confirm('Xóa bài viết này khỏi lịch sử?'))return;
-  WRH.list=WRH.list.filter(x=>x.id!==id);wrTx('readwrite',s=>s.delete(id)).catch(()=>{});
-  if(wr.cur&&wr.cur.id===id)wr.cur=null;render();
-}
-function wrHClear(){
-  const mine=wrL();if(!mine.length||!confirm('Xóa toàn bộ '+mine.length+' bài Writing đã lưu của bạn trên máy này?'))return;
-  WRH.list=WRH.list.filter(x=>x.u!==spUser());wrTx('readwrite',s=>mine.forEach(x=>s.delete(x.id))).catch(()=>{});render();
-}
 async function wrHPurgeUser(u){
   const mine=WRH.list.filter(x=>x.u===u);WRH.list=WRH.list.filter(x=>x.u!==u);
   try{await wrTx('readwrite',s=>mine.forEach(x=>s.delete(x.id)))}catch(e){}
 }
-function wrOpen(id){
-  const r=WRH.list.find(x=>x.id===id);if(!r)return;
-  wr.cur={id:r.id,t:r.t,kind:r.kind,q:r.q,essay:r.essay,res:r.res};wr.why={};wr.err='';render();window.scrollTo(0,0);
+const wrHDefaults=()=>({kind:'',q:'',sort:'date',order:'desc',from:'',to:''});
+const WR_PAGE=20;
+const WRS={items:[],total:0,more:false,loaded:false,loading:false,err:'',seq:0,f:wrHDefaults(),legacyHide:false,sync:'',syncing:false,opening:''};
+const wrFiltered=()=>{const f=WRS.f;return !!(f.kind||f.q.trim()||f.from||f.to)};
+function wrHQs(offset){
+  const f=WRS.f,p=new URLSearchParams({limit:WR_PAGE,offset:offset,sort:f.sort,order:f.order});
+  if(f.kind)p.set('kind',f.kind);
+  if(f.q.trim())p.set('q',f.q.trim());
+  if(f.from)p.set('since',Math.floor(new Date(f.from+'T00:00:00').getTime()/1000));
+  if(f.to)p.set('until',Math.floor(new Date(f.to+'T23:59:59').getTime()/1000));
+  return p.toString();
+}
+async function wrHLoad(more){
+  if(!AU||(more&&WRS.loading))return;
+  const seq=++WRS.seq,user=spUser();
+  WRS.loading=true;WRS.err='';if(tab==='wr')render();
+  try{
+    const r=await api('/writing/history?'+wrHQs(more?WRS.items.length:0));
+    if(seq!==WRS.seq||user!==spUser())return;   // đã đổi bộ lọc hoặc đổi tài khoản trong lúc chờ: bỏ kết quả cũ
+    WRS.items=more?WRS.items.concat(r.items):r.items;WRS.total=r.total;WRS.more=!!r.has_more;WRS.loaded=true;
+  }catch(er){
+    if(seq!==WRS.seq)return;
+    if(!er.auth)WRS.err='Không tải được lịch sử: '+er.message;
+  }
+  WRS.loading=false;if(tab==='wr')render();
+}
+function wrHToggle(){wr.cur=null;wr.prog=false;wr.hist=!wr.hist;if(wr.hist)wrHLoad(false);else render()}
+function wrHSet(k,v){WRS.f[k]=v;wrHLoad(false)}
+function wrHSort(v){const a=v.split(':');WRS.f.sort=a[0];WRS.f.order=a[1];wrHLoad(false)}
+function wrHSearch(){const e=$('#wr_hq');if(e)WRS.f.q=e.value;wrHLoad(false)}
+function wrHFilterClear(){WRS.f=wrHDefaults();wrHLoad(false)}
+function wrFromDetail(d){
+  if(!d||!d.result)throw new Error('Kết quả chấm của bài này không đọc được.');
+  return {id:d.id,t:d.created_at*1000,kind:d.kind,q:d.question,essay:d.essay,res:d.result,imp:d.improvements||{},hasImage:!!d.has_image,saved:true,
+          rev:{no:d.revision_no||1,parent:d.parent||null,list:d.revisions||[]}};
+}
+async function wrOpen(id){
+  if(WRS.opening)return;
+  WRS.opening=id;WRS.err='';render();
+  try{
+    wr.cur=wrFromDetail(await api('/writing/history/'+encodeURIComponent(id)));
+    wr.why={};wr.cd={};wr.iv='';wr.err='';
+  }catch(er){if(!er.auth)WRS.err='Không mở được bài này: '+er.message}
+  WRS.opening='';render();window.scrollTo(0,0);
+}
+async function wrHDel(id){
+  if(!confirm('Xóa vĩnh viễn bài viết này cùng điểm, phản hồi và các bản cải thiện? Các bản sửa liên quan (nếu có) vẫn được giữ lại. Không thể hoàn tác.'))return;
+  try{
+    await api('/writing/history/'+encodeURIComponent(id),{method:'DELETE'});
+    WRS.items=WRS.items.filter(x=>x.id!==id);WRS.total=Math.max(0,WRS.total-1);WRP.loaded=false;
+    if(wr.cur&&wr.cur.id===id)wr.cur=null;
+    if(wr.parent===id){wr.parent=null;wr.pinfo=null}
+  }catch(er){if(!er.auth)WRS.err='Không xóa được: '+er.message}
+  render();
+}
+async function wrHClear(){
+  if(!WRS.total||!confirm('Xóa vĩnh viễn toàn bộ '+WRS.total+' bài Writing của bạn (kể cả bản cải thiện) khỏi tài khoản? Không thể hoàn tác.'))return;
+  try{await api('/writing/history',{method:'DELETE'});WRS.items=[];WRS.total=0;WRS.more=false;WRP.loaded=false;wr.cur=null;wr.parent=null;wr.pinfo=null}
+  catch(er){if(!er.auth)WRS.err='Không xóa được: '+er.message}
+  render();
+}
+function wrLegacyBanner(){
+  const L=wrL();
+  if(!L.length||WRS.legacyHide)return '';
+  return `<div class="card"><b class="t">Bài cũ trên máy này</b><p class="mut" style="font-size:12.5px;margin:0 0 10px">Có ${L.length} bài Writing lưu trên trình duyệt này từ trước khi có lịch sử trên tài khoản. Đồng bộ để lưu chúng vào tài khoản của bạn trên máy chủ và xem được trên mọi thiết bị. Chỉ khi bạn bấm nút, bài mới được gửi đi.</p>${WRS.sync?`<p class="msg">${esc(WRS.sync)}</p>`:''}<div class="row" style="gap:14px"><button class="btn s sm" ${WRS.syncing?'disabled':''} onclick="wrHImport()">${WRS.syncing?'Đang đồng bộ…':'Đồng bộ lên tài khoản'}</button><button class="lnk" onclick="WRS.legacyHide=true;render()">Để sau</button></div></div>`;
+}
+async function wrHImport(){
+  const L=wrL();
+  if(!L.length||WRS.syncing)return;
+  WRS.syncing=true;WRS.sync='';render();
+  try{
+    const items=L.slice(0,100).map(r=>({cid:r.id,kind:r.kind,question:r.q,essay:r.essay,res:r.res,imp:r.imp||{},t:r.t}));
+    const r=await api('/writing/history/import',{method:'POST',json:{items}});
+    const done=new Set(r.done||[]),gone=WRH.list.filter(x=>done.has(x.id));
+    WRH.list=WRH.list.filter(x=>!done.has(x.id));   // chỉ xóa bản trên máy của những bài chắc chắn đã nằm trên tài khoản
+    try{await wrTx('readwrite',st=>gone.forEach(x=>st.delete(x.id)))}catch(e){}
+    WRS.sync='Đã đồng bộ '+r.imported+' bài'+(r.duplicates?', '+r.duplicates+' bài đã có sẵn':'')+(r.skipped?', '+r.skipped+' bài không hợp lệ được giữ lại trên máy':'')+'.';
+    WRS.syncing=false;WRP.loaded=false;await wrHLoad(false);return;
+  }catch(er){if(!er.auth)WRS.sync='Không đồng bộ được: '+er.message}
+  WRS.syncing=false;render();
 }
 
 /* ---- Nhập bài ---- */
@@ -1290,20 +1438,34 @@ function wrPickImg(inp){
   im.src=url;
 }
 function wrImgClear(){if(wr.imgUrl)URL.revokeObjectURL(wr.imgUrl);wr.img=null;wr.imgUrl='';render()}
-function wrNew(){wr.q='';wr.essay='';wrImgClear();wr.cur=null;wr.hist=false;wr.err='';wr.why={};wrSaveDraft();render();window.scrollTo(0,0)}
-function wrEdit(){const c=wr.cur;if(!c)return;wr.kind=c.kind;wr.q=c.q;wr.essay=c.essay;wr.cur=null;wr.hist=false;wr.why={};wrSaveDraft();render();window.scrollTo(0,0)}
+function wrNew(){wr.prog=false;wr.q='';wr.essay='';wr.parent=null;wr.pinfo=null;wrImgClear();wr.cur=null;wr.hist=false;wr.err='';wr.why={};wr.cd={};wr.iv='';wrSaveDraft();render();window.scrollTo(0,0)}
+function wrEdit(){
+  const c=wr.cur;if(!c)return;
+  wr.kind=c.kind;wr.q=c.q;wr.essay=c.essay;
+  wr.parent=(c.id&&c.saved!==false)?c.id:null;   // bản sửa lưu thành bài mới, liên kết với bài này; bài này giữ nguyên
+  wr.pinfo=wr.parent?{t:c.t,no:(c.rev&&c.rev.no)||1,img:!!c.hasImage}:null;
+  if(wr.imgUrl)URL.revokeObjectURL(wr.imgUrl);wr.img=null;wr.imgUrl='';   // không để ảnh của bài khác lọt sang bản sửa
+  if(c.kind==='ac1'&&c.img){wr.img=c.img;wr.imgUrl=URL.createObjectURL(c.img)}
+  wr.cur=null;wr.hist=false;wr.prog=false;wr.why={};wr.cd={};wr.iv='';wrSaveDraft();render();window.scrollTo(0,0);
+}
 async function wrSubmit(){
   if(wr.busy)return;
-  const q=wr.q.trim(),e=wr.essay.trim();
+  const q=wr.q.trim(),e=wrNormEssay(wr.essay);
   if(q.length<10){wr.err='Hãy nhập đề bài (ít nhất 10 ký tự).';render();return}
   if(wrWords(e)<30){wr.err='Bài viết quá ngắn, cần ít nhất 30 từ để chấm.';render();return}
-  const kind=wr.kind;wr.busy=true;wr.err='';render();
+  const kind=wr.kind,parent=wr.parent;wr.busy=true;wr.err='';render();
   const fd=new FormData();fd.append('kind',kind);fd.append('question',q);fd.append('essay',e);
+  if(parent)fd.append('parent_id',parent);
   if(kind==='ac1'&&wr.img)fd.append('image',wr.img,'chart.jpg');
   const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),180000);
   try{
     const res=await api('/writing/assess',{method:'POST',body:fd,signal:ctl.signal});
-    const c={kind,q,essay:e,res};wrHAdd(c);wr.cur=c;wr.why={};
+    let c=null;
+    if(res.duplicate&&res.essay_id){try{c=wrFromDetail(await api('/writing/history/'+encodeURIComponent(res.essay_id)))}catch(x){c=null}}   // bài trùng: hiển thị đúng bản đã lưu
+    if(!c)c={id:res.essay_id||null,t:res.created_at?res.created_at*1000:Date.now(),kind,q,essay:e,res,hasImage:!!res.has_image,saved:res.saved!==false,imp:{},
+             rev:{no:res.revision_no||1,parent:res.parent_id?{id:res.parent_id}:null,list:[]}};
+    c.img=kind==='ac1'?wr.img:null;c.dup=!!res.duplicate;c.saveErr=res.saved===false?(res.save_error||'Chưa lưu được bài vào lịch sử.'):'';
+    wr.cur=c;wr.parent=null;wr.pinfo=null;wr.why={};wr.cd={};wr.iv='';WRS.loaded=false;WRP.loaded=false;
   }catch(er){
     if(er.net&&DEV_CFG)sp.cfg=true;
     if(!er.auth)wr.err='Không chấm được: '+(er.name==='AbortError'?'quá thời gian chờ':er.message);
@@ -1315,79 +1477,327 @@ async function wrSubmit(){
 function vWr(){
   const c=spCfg();
   if(!AU)return head('Chấm IELTS Writing')+`<div class="pg">`+vAuth()+spCfgCard(c)+`</div>`;
-  const hb=ibtn('clock',"wr.cur=null;wr.hist=!wr.hist;render()",'Lịch sử bài viết',wr.hist);
+  const hb=`<span class="row" style="gap:8px;flex:none">${ibtn('trend',"wrPToggle()",'Tiến độ Writing',wr.prog&&!wr.cur)}${ibtn('clock',"wrHToggle()",'Lịch sử bài viết',wr.hist&&!wr.cur)}</span>`;
   let h=head('Chấm IELTS Writing',hb)+`<div class="pg">`;
   h+=`<div class="strip">${ic('shield',15)}<span>Đã đăng nhập · ${esc(AU.user.username)}${isAdmin()?' (admin)':''}</span><button class="lnk" ${wr.busy?'disabled':''} onclick="spLogout();render()">Đăng xuất</button></div>`;
   h+=spCfgCard(c);
-  h+=wr.cur?vWrResult():(wr.hist?vWrHist():vWrForm());
+  h+=wr.cur?vWrResult():(wr.prog?vWrProg():(wr.hist?vWrHist():vWrForm()));
   return h+`</div>`;
 }
 function vWrForm(){
   const k=WR_KINDS[wr.kind],{n,m,ok}=wrWc();
-  if(wr.busy)return `<div class="micw"><div class="spin"></div><b>Đang chấm bài…</b><p>Giám khảo AI đang chấm 4 tiêu chí, sửa lỗi và viết bản cải thiện. Có thể mất 20–60 giây. Đừng đóng ứng dụng.</p></div>`;
-  let h=`<div class="seg">${Object.entries(WR_KINDS).map(([id,x])=>`<button class="${wr.kind===id?'on':''}" onclick="wrSetKind('${id}')">${x.short}</button>`).join('')}</div>
+  if(wr.busy)return `<div class="micw"><div class="spin"></div><b>Đang chấm bài…</b><p>Giám khảo AI đang chấm 4 tiêu chí, sửa lỗi và viết bản cải thiện. Có thể mất 30–90 giây. Đừng đóng ứng dụng.</p></div>`;
+  let h=(wr.parent&&wr.pinfo?`<div class="note" style="margin:0 0 12px">${ic('shield',14)}<span>Bạn đang sửa lại bài đã chấm lúc ${spDt(wr.pinfo.t)}${wr.pinfo.no>1?' (bản '+wr.pinfo.no+')':''}. Bài gốc, điểm và phản hồi cũ được giữ nguyên; bản sửa sẽ được chấm và lưu thành bài mới, liên kết với bài gốc. <button class="lnk" onclick="wr.parent=null;wr.pinfo=null;render()">Không liên kết</button></span></div>`:'')+`<div class="seg">${Object.entries(WR_KINDS).map(([id,x])=>`<button class="${wr.kind===id?'on':''}" onclick="wrSetKind('${id}')">${x.short}</button>`).join('')}</div>
   <div class="sub"><span>Đề bài</span>${WR_SAMPLES[wr.kind]?`<button class="lnk" onclick="wrSample()">${ic('shuf',13)} Gợi ý đề</button>`:''}</div>
   <textarea class="f" id="wr_q" rows="5" oninput="wr.q=this.value;wrSaveDraft()" placeholder="${wr.kind==='ac1'?'Dán đề bài, ví dụ: The chart below shows… Summarise the information by selecting and reporting the main features…':'Dán đề bài vào đây, hoặc bấm “Gợi ý đề”.'}">${esc(wr.q)}</textarea>`;
   if(wr.kind==='ac1')h+=`<label class="fl">Ảnh biểu đồ / bảng số liệu</label>`+(wr.imgUrl
     ?`<div class="row" style="align-items:flex-start;margin-bottom:12px"><img src="${wr.imgUrl}" alt="Biểu đồ" style="max-width:min(100%,320px);max-height:220px;border-radius:12px;border:1px solid var(--bd)"><button class="lnk" onclick="wrImgClear()">Xóa ảnh</button></div>`
-    :`<label class="btn s sm" style="display:inline-flex;gap:8px;cursor:pointer;margin-bottom:6px">${ic('up',16)} Chọn ảnh<input type="file" accept="image/*" hidden onchange="wrPickImg(this)"></label><p class="msg">Nên đính kèm ảnh để chấm đúng độ chính xác số liệu của Task Achievement.</p>`);
+    :`<label class="btn s sm" style="display:inline-flex;gap:8px;cursor:pointer;margin-bottom:6px">${ic('up',16)} Chọn ảnh<input type="file" accept="image/*" hidden onchange="wrPickImg(this)"></label><p class="msg">${wr.parent&&wr.pinfo&&wr.pinfo.img?'Sẽ dùng lại biểu đồ đã lưu của bài gốc, hoặc chọn ảnh mới.':'Nên đính kèm ảnh để chấm đúng độ chính xác số liệu của Task Achievement.'}</p>`);
   h+=`<label class="fl" for="wr_e">Bài viết của bạn</label>
   <textarea class="f" id="wr_e" rows="15" oninput="wr.essay=this.value;wrCount();wrSaveDraft()" placeholder="Viết bài bằng tiếng Anh ở đây…">${esc(wr.essay)}</textarea>
   <div class="wcn ${ok?'ok':'w'}" id="wr_wc">${n} từ · tối thiểu ${m}${ok?' ✓':' (còn thiếu '+(m-n)+')'}</div>`;
   if(wr.err)h+=`<p class="err">${esc(wr.err)}</p>`;
   h+=`<button class="btn" id="wr_go" ${n<30?'disabled':''} onclick="wrSubmit()">Chấm bài</button>
-  <div class="note">${ic('shield',14)}<span>Chấm theo 4 tiêu chí công khai của IELTS Writing. Band chỉ là ước lượng tham khảo, không phải điểm IELTS chính thức. Bài viết được gửi tới dịch vụ AI để chấm và không được lưu trên máy chủ.</span></div>`;
+  <div class="note">${ic('shield',14)}<span>Chấm theo 4 tiêu chí công khai của IELTS Writing. Band chỉ là ước lượng tham khảo, không phải điểm IELTS chính thức. Bài viết được gửi tới dịch vụ AI để chấm, rồi lưu vào tài khoản của bạn trên máy chủ để xem lại ở mục lịch sử. Chỉ bạn xem được và bạn có thể xóa bất cứ lúc nào.</span></div>`;
   return h;
 }
 function vWrHist(){
-  const L=wrL();
-  let h=`<div class="row" style="justify-content:space-between;margin-bottom:12px"><button class="lnk" onclick="wr.hist=false;render()">${ic('back',14)} Viết bài mới</button>${L.length?`<button class="lnk" style="color:var(--bad)" onclick="wrHClear()">Xóa hết</button>`:''}</div>`;
-  if(WRH.err&&!L.length)return h+`<div class="card"><p class="mut" style="font-size:12.5px">Trình duyệt này không cho lưu lịch sử bài viết (có thể đang ở chế độ riêng tư).</p></div>`;
-  if(!L.length)return h+`<div class="card"><p class="mut" style="font-size:12.5px">Chưa có bài nào. Mỗi bài được chấm sẽ lưu ở đây cùng điểm, các lỗi đã sửa và bản cải thiện. Dữ liệu chỉ nằm trên máy bạn.</p></div>`;
-  return h+`<p class="msg">${L.length} bài đã chấm</p>`+L.map(r=>`<div class="card"><div class="row" style="justify-content:space-between"><span class="tg">${WR_KINDS[r.kind].short}</span><b>Band ${bnd(r.res.overall)}</b></div>
-    <div class="hgq">${esc(r.q.replace(/^Write about the following topic:\s*/i,''))}</div>
-    <div class="mut" style="font-size:12px">${r.res.words} từ · ${spDt(r.t)}</div>
-    <div class="row" style="margin-top:10px;gap:16px"><button class="lnk" data-id="${esc(r.id)}" onclick="wrOpen(this.dataset.id)">Xem lại</button><button class="lnk" style="color:var(--bad)" data-id="${esc(r.id)}" onclick="wrHDel(this.dataset.id)" aria-label="Xóa bài này">${ic('trash',14)}</button></div></div>`).join('');
+  const f=WRS.f,N=WRS.items;
+  let h=`<div class="row" style="justify-content:space-between;margin-bottom:12px"><button class="lnk" onclick="wr.hist=false;render()">${ic('back',14)} Viết bài mới</button>${WRS.total?`<button class="lnk" style="color:var(--bad)" onclick="wrHClear()">Xóa hết</button>`:''}</div>`;
+  h+=wrLegacyBanner();
+  h+=`<div class="seg s5" role="tablist">${[['','Tất cả'],['ac1','Task 1 Acad.'],['gt1','Task 1 Gen.'],['t2','Task 2']].map(([k,n])=>`<button class="${f.kind===k?'on':''}" role="tab" onclick="wrHSet('kind','${k}')">${n}</button>`).join('')}</div>
+  <div class="row" style="gap:8px;margin:8px 0"><input class="f" id="wr_hq" style="margin:0" maxlength="100" placeholder="Tìm trong đề và bài viết" value="${esc(f.q)}" oninput="WRS.f.q=this.value" onkeydown="if(event.key==='Enter')wrHSearch()" aria-label="Tìm bài viết"><button class="btn s sm" style="flex:none" onclick="wrHSearch()">Tìm</button></div>
+  <div class="row" style="gap:8px;margin-bottom:8px;flex-wrap:wrap"><input class="f" type="date" style="margin:0;flex:1;min-width:130px" value="${esc(f.from)}" onchange="wrHSet('from',this.value)" aria-label="Từ ngày"><input class="f" type="date" style="margin:0;flex:1;min-width:130px" value="${esc(f.to)}" onchange="wrHSet('to',this.value)" aria-label="Đến ngày">
+  <select class="f" style="margin:0;flex:1;min-width:130px" onchange="wrHSort(this.value)" aria-label="Sắp xếp">${[['date:desc','Mới nhất'],['date:asc','Cũ nhất'],['band:desc','Band cao nhất'],['band:asc','Band thấp nhất']].map(([v,n])=>`<option value="${v}" ${f.sort+':'+f.order===v?'selected':''}>${n}</option>`).join('')}</select></div>`;
+  if(WRS.err)h+=`<p class="err">${esc(WRS.err)}</p><button class="btn s sm" style="margin-bottom:10px" onclick="wrHLoad(false)">Thử lại</button>`;
+  if(WRS.loading&&!WRS.more&&!N.length)return h+`<div class="micw"><div class="spin"></div><b>Đang tải lịch sử…</b></div>`;
+  if(!N.length&&!WRS.loading&&!WRS.err)
+    return h+(wrFiltered()
+      ?`<div class="card"><p class="mut" style="font-size:12.5px">Không có bài nào khớp bộ lọc.</p><button class="lnk" onclick="wrHFilterClear()">Xóa bộ lọc</button></div>`
+      :`<div class="card"><p class="mut" style="font-size:12.5px">Chưa có bài nào. Mỗi bài được chấm sẽ được lưu vào tài khoản của bạn cùng điểm, các lỗi đã sửa và các bản cải thiện. Chỉ bạn xem được và bạn có thể xóa bất cứ lúc nào.</p></div>`);
+  h+=`<p class="msg">${WRS.total} bài${wrFiltered()?' khớp bộ lọc':' đã chấm'}${WRS.loading?' · đang tải…':''}${wrFiltered()?` · <button class="lnk" onclick="wrHFilterClear()">Xóa bộ lọc</button>`:''}</p>`;
+  h+=N.map(r=>{
+    const k=WR_KINDS[r.kind]||WR_KINDS.t2,v=r.versions||{};
+    const tags=[v.correct&&'Đã sửa lỗi',v.band7&&'Band 7',v.band8&&'Band 8',v.explain&&'Giải thích lỗi'].filter(Boolean).map(t=>`<span class="pill">${t}</span>`).join(' ');
+    return `<div class="card"><div class="row" style="justify-content:space-between"><span class="tg">${k.short}${r.revision_no>1?' · bản sửa '+esc(r.revision_no):''}</span><b>Band ${bnd(r.overall)}</b></div>
+    <div class="hgq">${esc(String(r.question||'').replace(/^Write about the following topic:\s*/i,''))}</div>
+    <div class="mut" style="font-size:12px">${esc(r.words)} từ · ${spDt(r.created_at*1000)}</div>${tags?`<div class="wrq">${tags}</div>`:''}
+    <div class="row" style="margin-top:10px;gap:16px"><button class="lnk" ${WRS.opening?'disabled':''} data-id="${esc(r.id)}" onclick="wrOpen(this.dataset.id)">${WRS.opening===r.id?'Đang mở…':'Xem lại'}</button><button class="lnk" style="color:var(--bad)" data-id="${esc(r.id)}" onclick="wrHDel(this.dataset.id)" aria-label="Xóa bài này">${ic('trash',14)}</button></div></div>`}).join('');
+  if(WRS.more)h+=`<button class="btn s" ${WRS.loading?'disabled':''} onclick="wrHLoad(true)">Tải thêm (${N.length}/${WRS.total})</button>`;
+  return h;
 }
+/* ---- Tiến độ Writing (Phase 5): xu hướng band, từng tiêu chí, theo loại bài, các lần sửa và chấm lại, loại lỗi hay gặp.
+   Máy chủ tính từ lịch sử đã lưu (Phase 4), không gọi AI, không tốn lượt. Chỉ chủ tài khoản xem được. ---- */
+const wrPDefaults=()=>({kind:'',days:0,series:'overall'});
+const WRP={d:null,loaded:false,loading:false,err:'',seq:0,f:wrPDefaults()};
+function wrPReset(){WRP.d=null;WRP.loaded=false;WRP.loading=false;WRP.err='';WRP.seq++;WRP.f=wrPDefaults()}
+async function wrPLoad(){
+  if(!AU)return;
+  const seq=++WRP.seq,user=spUser(),f=WRP.f;
+  WRP.loading=true;WRP.err='';if(tab==='wr')render();
+  const p=new URLSearchParams({days:f.days,tz:new Date().getTimezoneOffset()});
+  if(f.kind)p.set('kind',f.kind);
+  try{
+    const d=await api('/writing/progress?'+p.toString());
+    if(seq!==WRP.seq||user!==spUser())return;   // đã đổi bộ lọc hoặc đổi tài khoản trong lúc chờ: bỏ kết quả cũ
+    WRP.d=d;WRP.loaded=true;
+  }catch(er){
+    if(seq!==WRP.seq)return;
+    if(!er.auth)WRP.err='Không tải được tiến độ: '+er.message;
+  }
+  WRP.loading=false;if(tab==='wr')render();
+}
+function wrPToggle(){wr.cur=null;wr.hist=false;wr.prog=!wr.prog;WRS.err='';if(wr.prog&&!WRP.loaded)wrPLoad();else render()}
+function wrPSet(k,v){if(WRP.f[k]===v)return;WRP.f[k]=v;if(k==='series'){render();return}wrPLoad()}
+const wrP1=n=>(Math.round(n*10)/10).toFixed(1);
+/* Chip chênh lệch: lower=true khi số nhỏ hơn là tốt hơn (ví dụ số lỗi) */
+function wrChg(v,lower){
+  if(v==null||isNaN(v))return '';
+  const r=Math.round(v*10)/10,good=lower?r<0:r>0,bad=lower?r>0:r<0;
+  return `<span class="chg ${good?'up':bad?'dn':'eq'}">${r>0?'▲ +'+r.toFixed(1):r<0?'▼ −'+Math.abs(r).toFixed(1):'± 0.0'}</span>`;
+}
+const WRP_SERIES=[['overall','Tổng'],['task','Task'],['coherence','CC'],['lexical','LR'],['grammar','GRA']];
+const wrPDay=t=>new Date(t*1000).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'2-digit'});
+function wrPChart(T,series){
+  const pts=(T||[]).map(x=>({id:x.id,t:x.t,v:series==='overall'?x.overall:(x.bands||{})[series],r:x.rolling})).filter(p=>typeof p.v==='number');
+  if(pts.length<2)return `<p class="mut" style="font-size:12.5px;margin:10px 0 0">Cần ít nhất 2 bài để vẽ biểu đồ xu hướng.</p>`;
+  const W=340,H=170,L=26,R=10,TP=10,B=22,n=pts.length,vs=pts.map(p=>p.v);
+  let lo=Math.max(0,Math.floor(Math.min(...vs)-0.5)),hi=Math.min(9,Math.ceil(Math.max(...vs)+0.5));
+  if(hi-lo<2){hi=Math.min(9,lo+2);lo=Math.max(0,hi-2)}
+  const X=i=>L+(n===1?0:i*(W-L-R)/(n-1)),Y=v=>TP+(hi-v)*(H-TP-B)/(hi-lo),f1=v=>v.toFixed(1);
+  let g='';
+  for(let b=lo;b<=hi;b++)g+=`<line class="gl" x1="${L}" x2="${W-R}" y1="${f1(Y(b))}" y2="${f1(Y(b))}"/><text class="ax" x="${L-6}" y="${f1(Y(b)+3.5)}" text-anchor="end">${b}</text>`;
+  const line=pts.map((p,i)=>`${i?'L':'M'}${f1(X(i))} ${f1(Y(p.v))}`).join(' ');
+  const roll=series==='overall'?pts.map((p,i)=>`${i?'L':'M'}${f1(X(i))} ${f1(Y(p.r))}`).join(' '):'';
+  const rad=n>60?2.5:4;
+  const dots=pts.map((p,i)=>`<circle class="pt" cx="${f1(X(i))}" cy="${f1(Y(p.v))}" r="${rad}" tabindex="0" role="button" data-id="${esc(p.id)}" aria-label="${esc(wrPDay(p.t))}: band ${bnd(p.v)}. Mở bài viết" onclick="wrOpen(this.dataset.id)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();wrOpen(this.dataset.id)}"><title>${esc(wrPDay(p.t))} · Band ${bnd(p.v)}</title></circle>`).join('');
+  const nm=(WRP_SERIES.find(s=>s[0]===series)||WRP_SERIES[0])[1];
+  return `<svg class="pch" viewBox="0 0 ${W} ${H}" role="group" aria-label="Biểu đồ band ${esc(nm)} qua ${n} bài, từ ${bnd(pts[0].v)} đến ${bnd(pts[n-1].v)}">${g}`
+    +(roll?`<path class="rl" d="${roll}"/>`:'')+`<path class="ln" d="${line}"/>${dots}`
+    +`<text class="ax" x="${L}" y="${H-4}">${esc(wrPDay(pts[0].t))}</text><text class="ax" x="${W-R}" y="${H-4}" text-anchor="end">${esc(wrPDay(pts[n-1].t))}</text></svg>`;
+}
+function vWrProg(){
+  if(AU&&!WRP.loaded&&!WRP.loading&&!WRP.err)setTimeout(wrPLoad,0);   // dữ liệu đã cũ (vừa chấm/xóa/đồng bộ): tải lại, trong lúc chờ vẫn hiện số cũ
+  const f=WRP.f,d=WRP.d,kc=(d&&d.kind_counts)||{};
+  let h=`<div class="row" style="justify-content:space-between;margin-bottom:12px"><button class="lnk" onclick="wr.prog=false;render()">${ic('back',14)} Viết bài mới</button>${WRP.loaded?`<button class="lnk" ${WRP.loading?'disabled':''} onclick="wrPLoad()">${ic('redo',13)} Làm mới</button>`:''}</div>`;
+  h+=`<div class="seg s5" role="tablist" aria-label="Loại bài">${[['','Tất cả'],['ac1','Task 1 Acad.'],['gt1','Task 1 Gen.'],['t2','Task 2']].map(([k,n])=>`<button class="${f.kind===k?'on':''}" role="tab" aria-selected="${f.kind===k}" onclick="wrPSet('kind','${k}')">${n}${k&&kc[k]?` (${kc[k]})`:''}</button>`).join('')}</div>
+  <div class="seg" role="tablist" aria-label="Khoảng thời gian" style="margin-bottom:12px">${[[30,'30 ngày'],[90,'90 ngày'],[365,'1 năm'],[0,'Tất cả']].map(([v,n])=>`<button class="${f.days===v?'on':''}" role="tab" aria-selected="${f.days===v}" onclick="wrPSet('days',${v})">${n}</button>`).join('')}</div>`;
+  if(WRS.err)h+=`<p class="err">${esc(WRS.err)}</p>`;
+  if(WRP.err)h+=`<p class="err">${esc(WRP.err)}</p><button class="btn s sm" style="margin-bottom:10px" onclick="wrPLoad()">Thử lại</button>`;
+  if(WRP.loading&&!d)return h+`<div class="micw"><div class="spin"></div><b>Đang tính tiến độ…</b></div>`;
+  if(!d)return h;
+  if(!d.total){
+    const flt=f.kind||f.days;
+    return h+`<div class="card"><p class="mut" style="font-size:12.5px">${flt?'Không có bài nào trong loại bài hoặc khoảng thời gian đã chọn.':'Chưa có dữ liệu tiến độ. Mỗi bài bạn chấm sẽ được lưu vào tài khoản và hiện ở đây: band theo thời gian, từng tiêu chí, loại lỗi hay gặp và mức tiến bộ sau mỗi lần sửa.'}</p>`
+      +(flt?`<button class="lnk" onclick="WRP.f=wrPDefaults();wrPLoad()">Xem tất cả</button>`:`<button class="btn s sm" onclick="wr.prog=false;wrNew()">Viết bài đầu tiên</button>`)+`</div>`;
+  }
+  const o=d.overall,C=d.criteria,A=d.activity,E=d.errors||{types:[]},V=d.revisions||{pairs:0},K=WR_KINDS[f.kind];
+  if(WRP.loading)h+=`<p class="msg">Đang cập nhật…</p>`;
+  // Tổng quan
+  h+=`<div class="card"><div class="row" style="justify-content:space-between;margin-bottom:14px"><b class="t" style="margin:0">Tổng quan${K?' · '+esc(K.short):''}</b>${wrChg(o.change)}</div>
+    <div class="pgs"><div><b>${bnd(o.latest)}</b><span>Band gần nhất</span></div><div><b>${wrP1(o.recent_avg)}</b><span>TB 5 bài gần nhất</span></div><div><b>${bnd(o.best)}</b><span>Cao nhất</span></div><div><b>${esc(d.total)}</b><span>Bài đã chấm</span></div></div>
+    <p class="mut" style="font-size:12px;margin:14px 0 0">${o.previous_avg!=null?`Trung bình 5 bài gần nhất ${wrP1(o.recent_avg)} so với ${wrP1(o.previous_avg)} của 5 bài trước đó.`:'Chấm thêm bài để so sánh với giai đoạn trước.'}${o.since_first!=null?` Từ bài đầu tiên (${esc(wrPDay(A.first_at))}): ${bnd(o.first)} → ${bnd(o.latest)}.`:''}${d.shown<d.total?` Biểu đồ hiển thị ${esc(d.shown)} bài gần nhất.`:''}</p></div>`;
+  // Biểu đồ
+  h+=`<div class="card"><b class="t">Xu hướng band</b><div class="seg s5" role="tablist" aria-label="Chọn đường biểu đồ" style="margin-bottom:10px">${WRP_SERIES.map(([k,n])=>`<button class="${f.series===k?'on':''}" role="tab" aria-selected="${f.series===k}" onclick="wrPSet('series','${k}')">${n}</button>`).join('')}</div>
+    ${wrPChart(d.trend,f.series)}
+    <p class="mut" style="font-size:11.5px;margin:8px 0 0">${f.series==='overall'?'Đường nét đứt: trung bình 3 bài gần nhất. ':''}Chạm vào một điểm để mở lại bài viết đó.</p></div>`;
+  // Tiêu chí
+  const taskName=K?K.crit:'Task Achievement / Response';
+  h+=`<div class="card"><b class="t">Bốn tiêu chí · 5 bài gần nhất</b>`+[['task',taskName],['coherence','Coherence & Cohesion'],['lexical','Lexical Resource'],['grammar','Grammatical Range & Accuracy']].map(([k,n])=>{
+    const c=C[k]||{},tag=d.weakest===k?' <span class="pill" style="background:var(--warnbg);color:var(--warn)">Cần ưu tiên</span>':d.strongest===k?' <span class="pill" style="background:var(--okbg);color:var(--ok)">Mạnh nhất</span>':'';
+    return `<div class="crit"><div class="row"><span>${esc(n)}${tag}</span><span class="row" style="gap:8px;flex:none">${wrChg(c.change)}<b>${wrP1(c.recent_avg)}</b></span></div><div class="pbar"><i style="width:${Math.max(0,Math.min(100,(c.recent_avg||0)/9*100))}%"></i></div>
+      <div class="mut" style="font-size:11.5px;margin-top:4px">Trung bình toàn bộ ${wrP1(c.average)} · gần nhất ${bnd(c.latest)} · cao nhất ${bnd(c.best)}</div></div>`}).join('')+`</div>`;
+  // Gợi ý
+  if((d.focus_vi||[]).length)h+=`<div class="card"><b class="t">Nên tập trung tiếp theo</b>`+d.focus_vi.map(x=>`<div class="li"><div><b>${esc(x.title_vi)}</b><br><span class="mut" style="font-size:12.5px">${esc(x.text_vi)}</span></div></div>`).join('')+`</div>`;
+  // Loại lỗi
+  if(E.types&&E.types.length){
+    h+=`<div class="card"><div class="row" style="justify-content:space-between"><b class="t" style="margin:0">Loại lỗi hay gặp</b>${E.per_essay_earlier!=null?wrChg(E.per_essay_recent-E.per_essay_earlier,true):''}</div>
+      <p class="mut" style="font-size:12px;margin:6px 0 4px">Từ ${esc(E.essays)} bài gần nhất. ${E.per_essay_earlier!=null?`Trung bình ${wrP1(E.per_essay_recent)} lỗi mỗi bài ở 5 bài gần nhất, so với ${wrP1(E.per_essay_earlier)} ở 5 bài trước đó.`:`Trung bình ${wrP1(E.per_essay_recent)} lỗi mỗi bài.`}</p>`
+      +E.types.slice(0,6).map(x=>`<div class="li"><div><b>${esc(WR_TYPES[x.type]||x.type)}</b><br><span class="mut" style="font-size:12px">${esc(x.count)} lỗi trong ${esc(x.essays)} bài</span></div><span class="pill">${esc(x.count)}</span></div>`).join('')
+      +`<p class="mut" style="font-size:11.5px;margin-top:8px">Mỗi bài chỉ ghi tối đa 20 chỗ cần sửa nên đây là xu hướng, không phải tổng số lỗi chính xác.</p></div>`;
+  }
+  // Theo loại bài
+  const bk=Object.entries(d.by_kind||{});
+  if(!f.kind&&bk.length>1)h+=`<div class="card"><b class="t">Theo loại bài</b>`+bk.map(([k,x])=>`<div class="li"><div><b>${esc((WR_KINDS[k]||{}).short||k)}</b><br><span class="mut" style="font-size:12px">${esc(x.count)} bài · gần nhất ${bnd(x.latest)} · cao nhất ${bnd(x.best)}</span></div><b>${wrP1(x.average)}</b></div>`).join('')+`<p class="mut" style="font-size:11.5px;margin-top:8px">Số bên phải là band trung bình.</p></div>`;
+  // Sửa và chấm lại
+  h+=`<div class="card"><b class="t">Sửa và chấm lại</b>`+(V.pairs
+    ?`<div class="row" style="justify-content:space-between"><span style="font-size:12.5px">${esc(V.pairs)} lần sửa: tăng điểm ${esc(V.improved)}, giữ nguyên ${esc(V.same)}, giảm ${esc(V.worse)}</span>${wrChg(V.avg_gain)}</div><p class="mut" style="font-size:12px;margin:6px 0 0">Trung bình mỗi lần sửa thay đổi ${V.avg_gain>0?'+':''}${wrP1(V.avg_gain)} band so với bài trước đó.</p>`
+    :`<p class="mut" style="font-size:12.5px">Mở một bài đã chấm và bấm “Sửa và chấm lại” để xem mỗi lần sửa giúp bạn tăng bao nhiêu band.</p>`)+`</div>`;
+  // Hoạt động
+  h+=`<div class="card"><b class="t">Hoạt động</b><div class="pkd"><span>7 ngày qua</span><b>${esc(A.last_7_days)} bài</b></div><div class="pkd" style="margin-top:6px"><span>30 ngày qua</span><b>${esc(A.last_30_days)} bài</b></div>
+    <div class="pkd" style="margin-top:6px"><span>Chuỗi tuần liên tiếp có viết</span><b>${esc(A.streak_weeks)} tuần</b></div><div class="pkd" style="margin-top:6px"><span>Độ dài trung bình</span><b>${esc(Math.round((d.words||{}).average||0))} từ</b></div>
+    ${(d.words||{}).below_min?`<p class="cdw" style="margin-top:8px">${esc(d.words.below_min)} bài chưa đủ số từ tối thiểu.</p>`:''}${A.imported?`<p class="mut" style="font-size:11.5px;margin-top:8px">Gồm ${esc(A.imported)} bài đồng bộ từ trình duyệt.</p>`:''}</div>`;
+  return h+`<div class="note">${ic('shield',14)}<span>${esc(d.disclaimer_vi||'Band ước lượng chỉ mang tính tham khảo, không phải điểm IELTS chính thức.')}</span></div>`;
+}
+const WR_CN={task:'Task',coherence:'Coherence & Cohesion',lexical:'Lexical Resource',grammar:'Grammatical Range & Accuracy'};
+function wrCritDetail(key,r){
+  const c=(r.criteria||{})[key],adj=(r.adjustments||[]).filter(a=>a.criterion===key);
+  let d=adj.map(a=>`<p class="cdw">Band được hạ từ ${bnd(a.from)} xuống ${bnd(a.to)}: ${esc(a.reason_vi)}</p>`).join('');
+  if(!c)return d;
+  const open=wr.cd[key];
+  d+=`<button class="lnk" style="margin:0 0 8px" onclick="wr.cd['${key}']=!wr.cd['${key}'];render()">${open?'Ẩn chi tiết':'Xem chi tiết'}</button>`;
+  if(!open)return d;
+  const L=(t,a)=>a&&a.length?`<div class="cdl"><b>${t}</b>${a.map(x=>`<div>• ${esc(x)}</div>`).join('')}</div>`:'';
+  const ev=(c.evidence||[]).length?`<div class="cdl"><b>Trích từ bài của bạn</b>${c.evidence.map(e=>`<div class="cdq"><span class="${e.effect==='negative'?'del':e.effect==='positive'?'ins':'mut'}">“${esc(e.quote)}”</span>${e.comment_vi?`<br><span class="mut">${esc(e.comment_vi)}</span>`:''}</div>`).join('')}</div>`:'';
+  return d+L('Điểm mạnh',c.strengths_vi)+L('Điểm yếu',c.weaknesses_vi)+ev+L('Cách cải thiện',c.recommendations_vi);
+}
+const wrErrExtra=x=>(x.corrected_sentence?`<br><span class="mut">Câu đã sửa:</span> ${esc(x.corrected_sentence)}`:'')+(x.alternative?`<br><span class="mut">Cách nói tự nhiên hơn:</span> ${esc(x.alternative)}`:'');
 function wrAnnot(c){
   const t=c.essay,cs=c.res.corrections||[],hit=[],rest=[];
   cs.forEach((x,i)=>{const o=x.original,k=o?t.toLowerCase().indexOf(o.toLowerCase()):-1;
     if(k<0||hit.some(h=>k<h.e&&k+o.length>h.k))rest.push(x);else hit.push({k,e:k+o.length,c:x,i})});
   hit.sort((a,b)=>a.k-b.k);
   let d='',p=0;
-  hit.forEach(h=>{d+=esc(t.slice(p,h.k))+`<s class="del">${esc(t.slice(h.k,h.e))}</s> <span class="ins">${esc(h.c.better)}</span> <button class="lnk" onclick="wr.why[${h.i}]=!wr.why[${h.i}];render()">giải thích</button>`+(wr.why[h.i]?`<span class="why"><b>${esc(WR_TYPES[h.c.type]||'')}</b> · ${esc(h.c.why_vi)}</span>`:' ');p=h.e});
+  hit.forEach(h=>{d+=esc(t.slice(p,h.k))+`<s class="del">${esc(t.slice(h.k,h.e))}</s> <span class="ins">${esc(h.c.better)}</span> <button class="lnk" onclick="wr.why[${h.i}]=!wr.why[${h.i}];render()">giải thích</button>`+(wr.why[h.i]?`<span class="why"><b>${esc(WR_TYPES[h.c.type]||'')}</b> · ${esc(h.c.why_vi)}${wrErrExtra(h.c)}</span>`:' ');p=h.e});
   d+=esc(t.slice(p));
   const cnt={};cs.forEach(x=>{cnt[x.type]=(cnt[x.type]||0)+1});
   const chips=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<span class="pill">${esc(WR_TYPES[k]||k)} ${n}</span>`).join(' ');
   return `<div class="card"><b class="t">Bài viết của bạn · ${cs.length} chỗ cần sửa</b>${chips?`<div class="wrq">${chips}</div>`:''}
     <p class="mut" style="font-size:12px">Chữ <s class="del">gạch đỏ</s> là phần cần sửa, chữ <span class="ins">xanh</span> là cách viết tốt hơn.</p>
     <div class="dv" style="white-space:pre-wrap">${d}</div>`
-    +rest.map(x=>`<div class="li"><div><span class="mut">${esc(x.original)}</span><br><b>${esc(x.better)}</b><br><span class="mut" style="font-size:12px">${esc(WR_TYPES[x.type]||'')} · ${esc(x.why_vi)}</span></div></div>`).join('')+`</div>`;
+    +rest.map(x=>`<div class="li"><div><span class="mut">${esc(x.original)}</span><br><b>${esc(x.better)}</b><br><span class="mut" style="font-size:12px">${esc(WR_TYPES[x.type]||'')} · ${esc(x.why_vi)}</span>${wrErrExtra(x)?`<span style="font-size:12px">${wrErrExtra(x)}</span>`:''}</div></div>`).join('')+`</div>`;
+}
+/* ---- Cải thiện bài viết (Phase 3): sửa lỗi / Band 7 / Band 8 / giải thích lỗi / so sánh.
+   Bài gốc (c.essay) và kết quả chấm (c.res) không bao giờ bị ghi đè: các bản mới nằm riêng trong c.imp. ---- */
+const WR_IM={
+  correct:{tab:'Sửa lỗi',title:'Bản đã sửa lỗi',btn:'Tạo bản sửa lỗi',desc:'Sửa lỗi ngữ pháp, từ vựng, chính tả, dấu câu và những chỗ diễn đạt gượng. Giữ nguyên ý, cấu trúc và trình độ từ vựng của bạn.'},
+  band7:{tab:'Band 7',title:'Bản nâng lên Band 7',btn:'Tạo bản Band 7',desc:'Viết lại tự nhiên và mạch lạc, nhắm khoảng Band 7. Giữ nguyên quan điểm, ý chính và ví dụ của bạn.'},
+  band8:{tab:'Band 8',title:'Bản nâng lên Band 8',btn:'Tạo bản Band 8',desc:'Viết lại tinh tế nhưng vẫn tự nhiên, nhắm khoảng Band 8. Không nhồi từ khó, không thêm số liệu hay ví dụ mới.'},
+  explain:{tab:'Giải thích',title:'Giải thích lỗi sai',btn:'Giải thích lỗi của tôi',desc:'Giải thích bằng tiếng Việt những lỗi quan trọng nhất trong bài, kèm ví dụ dễ hiểu.'}};
+const wrIk=(c,m)=>(c.id||'x')+':'+m;
+async function wrImprove(mode,again){
+  const c=wr.cur;if(!c||!WR_IM[mode])return;
+  c.imp=c.imp||{};
+  const k=wrIk(c,mode);
+  if(wr.ib[k]||(c.imp[mode]&&!again))return;
+  wr.ib[k]=true;wr.ie[k]='';render();
+  const fd=new FormData();fd.append('mode',mode);
+  if(c.id&&c.saved!==false)fd.append('essay_id',c.id);   // bài đã lưu: máy chủ tự đọc bài gốc từ database và lưu kết quả cạnh bài gốc
+  else{fd.append('kind',c.kind);fd.append('question',c.q);fd.append('essay',c.essay);if(c.kind==='ac1'&&c.img)fd.append('image',c.img,'chart.jpg')}
+  const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),170000);
+  try{
+    const res=await api('/writing/improve',{method:'POST',body:fd,signal:ctl.signal});
+    if(res.saved===false)res.warnings=(res.warnings||[]).concat('Chưa lưu được bản này vào lịch sử do lỗi máy chủ. Hãy sao chép lại nếu cần.');
+    c.imp[mode]=res;
+    const it=WRS.items.find(x=>x.id===c.id);if(it){it.versions=it.versions||{};it.versions[mode]=true}
+  }catch(er){
+    if(!er.auth)wr.ie[k]=er.name==='AbortError'?'Quá thời gian chờ, hãy thử lại.':er.message;
+  }
+  clearTimeout(to);delete wr.ib[k];if(tab==='wr')render();
+}
+function wrCopyV(b,m){
+  const s=wr.cur&&wr.cur.imp&&wr.cur.imp[m]&&wr.cur.imp[m].essay;if(!s)return;
+  const done=()=>{const o=b.innerHTML;b.textContent='Đã sao chép';setTimeout(()=>{b.innerHTML=o},1500)};
+  try{navigator.clipboard.writeText(s).then(done,()=>{})}catch(e){}
+}
+/* So sánh từng từ (LCS): trả về HTML cột trái (bài gốc, từ bị thay tô đỏ) và cột phải (bản mới, từ mới tô xanh). Chạy trên máy, không tốn lượt AI. */
+const WR_TOK=/\s+|[A-Za-z0-9]+(?:['’\-][A-Za-z0-9]+)*|[^\sA-Za-z0-9]/g;
+function wrToks(s){const w=[];let ws='';(String(s||'').match(WR_TOK)||[]).forEach(t=>{if(/^\s/.test(t))ws+=t;else{w.push({t,ws});ws=''}});return{w,tail:ws}}
+function wrDiff(a,b){
+  const A=wrToks(a),B=wrToks(b),n=A.w.length,m=B.w.length,big=n*m>4e6;
+  const ka=new Uint8Array(n),kb=new Uint8Array(m);let lcs=0;
+  if(big){ka.fill(1);kb.fill(1);lcs=Math.min(n,m)}
+  else{
+    const W=m+1,dp=new Uint16Array((n+1)*W);
+    for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)dp[i*W+j]=A.w[i].t===B.w[j].t?dp[(i+1)*W+j+1]+1:Math.max(dp[(i+1)*W+j],dp[i*W+j+1]);
+    let i=0,j=0;
+    while(i<n&&j<m){if(A.w[i].t===B.w[j].t){ka[i]=kb[j]=1;i++;j++;lcs++}else if(dp[(i+1)*W+j]>=dp[i*W+j+1])i++;else j++}
+  }
+  const R=(X,k,cls)=>{let h='',open=false;
+    X.w.forEach((o,i)=>{
+      if(!k[i]){
+        if(open&&o.ws.indexOf('\n')>=0){h+='</span>';open=false}
+        if(!open){h+=esc(o.ws)+'<span class="'+cls+'">'+esc(o.t);open=true}else h+=esc(o.ws)+esc(o.t);
+      }else{if(open){h+='</span>';open=false}h+=esc(o.ws)+esc(o.t)}
+    });
+    if(open)h+='</span>';return h+esc(X.tail)};
+  return{l:R(A,ka,'dfd'),r:R(B,kb,'dfi'),kept:n+m?Math.round(200*lcs/(n+m)):100,del:n-lcs,ins:m-lcs,big};
+}
+function wrCmpPanel(c){
+  const have=['correct','band7','band8'].filter(m=>c.imp[m]&&c.imp[m].essay);
+  if(!have.length)return `<p class="mut" style="font-size:12.5px;margin:12px 0 0">Hãy tạo ít nhất một bản (Sửa lỗi, Band 7 hoặc Band 8) rồi quay lại đây để so sánh với bài gốc.</p>`;
+  const m=have.indexOf(wr.cmp)>=0?wr.cmp:have[0],R=c.imp[m];
+  c._dm=c._dm||{};const key=m+':'+R.essay.length;
+  const D=c._dm[key]||(c._dm[key]=wrDiff(c.essay,R.essay));
+  return `<div class="row" style="flex-wrap:wrap;gap:8px;margin:12px 0 10px">${have.map(x=>`<button class="pill" style="${x===m?'background:var(--btn);color:#fff':''}" onclick="wr.cmp='${x}';render()">${WR_IM[x].tab}</button>`).join('')}</div>
+  <p class="mut" style="font-size:12px;margin:0 0 10px">Giữ nguyên ${D.kept}% · bỏ ${D.del} từ · thêm ${D.ins} từ. <span class="dfd">Đỏ</span> là phần bị thay trong bài gốc, <span class="dfi">xanh</span> là phần mới.${D.big?' Bài quá dài nên không tô màu chi tiết.':''}</p>
+  <div class="cmp"><div><div class="cmph">Bài gốc của bạn</div><div class="cmpc">${D.l}</div></div><div><div class="cmph">${esc(WR_IM[m].title)}</div><div class="cmpc">${D.r}</div></div></div>
+  <div class="note">${ic('shield',14)}<span>${esc(R.disclaimer_vi||'Bản này chỉ là tài liệu tham khảo để học, không đảm bảo đạt band tương ứng.')}</span></div>`;
+}
+function wrVersionView(mode,R,c){
+  const m=WR_IM[mode];
+  let h=`<div class="row" style="justify-content:space-between;align-items:flex-start"><div><b class="t" style="margin:0">${m.title}</b><span class="mut" style="font-size:12px">${esc(R.words)} từ${R.stats?' · giữ nguyên '+esc(R.stats.kept_pct)+'% từ của bài gốc':''}</span></div><span class="row" style="gap:6px;flex:none">${spk(R.essay)}<button class="lnk" onclick="wrCopyV(this,'${mode}')">Sao chép</button></span></div>`;
+  (R.warnings||[]).forEach(w=>{h+=`<p class="cdw">${esc(w)}</p>`});
+  if(mode==='correct')h+=`<p class="mut" style="font-size:12.5px;margin:8px 0 0">${R.unchanged?'Không tìm thấy lỗi cần sửa: bài của bạn được giữ nguyên.':esc(R.summary_vi||'')}</p>`;
+  h+=`<p style="margin-top:10px;white-space:pre-wrap">${esc(R.essay)}</p>
+    <div class="row" style="gap:16px;margin:4px 0 10px"><button class="lnk" onclick="wr.cmp='${mode}';wr.iv='cmp';render()">So sánh với bài gốc</button><button class="lnk" onclick="wrImprove('${mode}',true)">Tạo lại</button></div>`;
+  if((R.notes_vi||[]).length)h+=`<hr><b class="t">Bản này thể hiện gì của ${esc(m.tab)}</b>`+R.notes_vi.map(x=>`<div class="li"><div>• ${esc(x)}</div></div>`).join('');
+  if((R.changes||[]).length)h+=`<hr><b class="t">Những thay đổi chính</b>`+R.changes.map(x=>`<div class="li"><div><span class="dfd">${esc(x.before)}</span> → <span class="dfi">${esc(x.after)}</span><br><span class="mut" style="font-size:12px">${x.category?esc(WR_TYPES[x.category]||x.category)+' · ':''}${esc(x.why_vi)}</span></div></div>`).join('');
+  if((R.useful_phrases||[]).length)h+=`<hr><b class="t">Cụm từ nên học</b>`+R.useful_phrases.map(x=>`<div class="li"><div><b>${esc(x.phrase)}</b><br><span class="mut" style="font-size:12px">${esc(x.meaning_vi)}</span></div>${spk(x.phrase)}</div>`).join('');
+  if(R.tip_vi)h+=`<p class="mut" style="font-size:12.5px">${esc(R.tip_vi)}</p>`;
+  return h+`<div class="note">${ic('shield',14)}<span>${esc(R.disclaimer_vi||'Bản này chỉ là tài liệu tham khảo để học, không đảm bảo đạt band tương ứng.')}</span></div>`;
+}
+function wrExplainView(R){
+  let h=`<b class="t">Giải thích lỗi sai</b>`+(R.warnings||[]).map(w=>`<p class="cdw">${esc(w)}</p>`).join('')+`<p style="font-size:13px;margin:0 0 10px">${esc(R.summary_vi)}</p>`;
+  if((R.patterns_vi||[]).length)h+=`<div class="cdl"><b>Lỗi lặp lại</b>${R.patterns_vi.map(x=>`<div>• ${esc(x)}</div>`).join('')}</div>`;
+  if(!(R.mistakes||[]).length)return h+`<p class="mut" style="font-size:12.5px">Không tìm thấy lỗi quan trọng cần giải thích trong bài này.</p>`;
+  return h+R.mistakes.map((x,i)=>`<div class="exc"><b>${i+1}. ${esc(WR_TYPES[x.category]||x.category)}</b>
+    <div style="margin:6px 0"><span class="dfd">${esc(x.original)}</span> → <span class="dfi">${esc(x.corrected)}</span></div>
+    <p style="font-size:12.5px;margin:4px 0">${esc(x.explanation_vi)}</p>
+    ${x.example_wrong?`<div class="cdq"><span class="del">✗ ${esc(x.example_wrong)}</span><br><span class="ins">✓ ${esc(x.example_right)}</span></div>`:''}
+    ${x.tip_vi?`<p class="mut" style="font-size:12px;margin:4px 0 0">Mẹo: ${esc(x.tip_vi)}</p>`:''}</div>`).join('');
+}
+function vWrImprove(c){
+  c.imp=c.imp||{};
+  const iv=wr.iv,tabs=['correct','band7','band8','explain','cmp'];
+  let h=`<div class="card"><b class="t">Cải thiện bài viết</b>
+  <p class="mut" style="font-size:12px;margin:0 0 12px">Tạo các bản tham khảo từ bài gốc của bạn. Bài gốc và điểm chấm ở trên luôn được giữ nguyên.</p>
+  <div class="seg s5" role="tablist">${tabs.map(m=>`<button class="${iv===m?'on':''}" role="tab" aria-selected="${iv===m}" onclick="wr.iv='${m}';render()">${m==='cmp'?'So sánh':WR_IM[m].tab}${c.imp[m]?'<i class="dg" role="img" aria-label="đã tạo"></i>':''}</button>`).join('')}</div>`;
+  if(!iv)return h+`<p class="mut" style="font-size:12.5px;margin:12px 0 0">Chọn một mục ở trên để bắt đầu.</p></div>`;
+  if(iv==='cmp')return h+wrCmpPanel(c)+`</div>`;
+  const m=WR_IM[iv],R=c.imp[iv],k=wrIk(c,iv);
+  h+=`<div style="margin-top:12px">`;
+  if(wr.ib[k])return h+`<div class="micw"><div class="spin"></div><b>Đang tạo…</b><p>${iv==='explain'?'Đang phân tích lỗi của bạn.':'Đang viết lại và đối chiếu với bài gốc.'} Có thể mất 20–60 giây. Đừng đóng ứng dụng.</p></div></div></div>`;
+  if(!R)h+=`<p class="mut" style="font-size:12.5px">${m.desc}</p>${wr.ie[k]?`<p class="err">${esc(wr.ie[k])}</p>`:''}<button class="btn" onclick="wrImprove('${iv}')">${m.btn}</button>`;
+  else h+=(iv==='explain'?wrExplainView(R):wrVersionView(iv,R,c))+(wr.ie[k]?`<p class="err">${esc(wr.ie[k])}</p>`:'');
+  return h+`</div></div>`;
 }
 function wrCopy(b){
   const s=wr.cur&&wr.cur.res.improved.essay;if(!s)return;
   const done=()=>{const o=b.innerHTML;b.textContent='Đã sao chép';setTimeout(()=>{b.innerHTML=o},1500)};
   try{navigator.clipboard.writeText(s).then(done,()=>{})}catch(e){}
 }
+function vWrRevs(c){
+  const r=c.rev||{},ls=r.list||[];
+  if(!(r.parent&&r.parent.id)&&!ls.length)return '';
+  const row=(x,lab)=>`<div class="li"><div><b>${esc(lab)}</b>${x.overall!=null?' · Band '+bnd(x.overall):''}${x.created_at?`<br><span class="mut" style="font-size:12px">${spDt(x.created_at*1000)}</span>`:''}</div><button class="lnk" data-id="${esc(x.id)}" onclick="wrOpen(this.dataset.id)">Xem</button></div>`;
+  return `<div class="card" style="margin-top:12px"><b class="t">Các lần sửa</b>`+(r.parent&&r.parent.id?row(r.parent,'Bài trước'):'')+ls.map(x=>row(x,'Bản sửa '+x.revision_no)).join('')+`</div>`;
+}
 function vWrResult(){
   const c=wr.cur,r=c.res,k=WR_KINDS[c.kind]||WR_KINDS.t2,B=r.bands||{},N=r.notes||{},im=r.improved||{};
   const rows=[['task',r.task_crit||k.crit],['coherence','Coherence & Cohesion'],['lexical','Lexical Resource'],['grammar','Grammatical Range & Accuracy']];
-  let h=`<div class="row" style="justify-content:space-between;margin-bottom:12px"><button class="lnk" onclick="wr.cur=null;render()">${ic('back',14)} ${wr.hist?'Về lịch sử':'Quay lại bài viết'}</button><span class="mut" style="font-size:12px">${k.short}${c.t?' · '+spDt(c.t):''}</span></div>`;
+  let h=`<div class="row" style="justify-content:space-between;margin-bottom:12px"><button class="lnk" onclick="wr.cur=null;render()">${ic('back',14)} ${wr.prog?'Về tiến độ':wr.hist?'Về lịch sử':'Quay lại bài viết'}</button><span class="mut" style="font-size:12px">${k.short}${c.t?' · '+spDt(c.t):''}</span></div>`;
+  if(c.dup)h+=`<p class="msg" style="margin:0 2px 12px">Bài viết này giống hệt bài đã chấm trước đó nên hiển thị kết quả đã lưu (không tốn thêm lượt chấm).</p>`;
+  if(c.saveErr)h+=`<p class="err" style="margin:0 2px 12px">${esc(c.saveErr)}</p>`;
+  if(c.rev&&c.rev.no>1)h+=`<p class="msg" style="margin:0 2px 12px">Đây là bản sửa lần ${esc(c.rev.no)}.${c.rev.parent&&c.rev.parent.id?` <button class="lnk" data-id="${esc(c.rev.parent.id)}" onclick="wrOpen(this.dataset.id)">Xem bài trước</button>`:' Bài gốc đã bị xóa.'}</p>`;
   h+=`<div class="card"><div class="band xl" style="margin-bottom:18px"><b>${bnd(r.overall)}</b><small>BAND ƯỚC TÍNH</small></div>`
-    +rows.map(([key,n])=>`<div class="crit"><div class="row"><span>${esc(n)}</span><b>${bnd(B[key])}</b></div><div class="pbar"><i style="width:${(B[key]||0)/9*100}%"></i></div>${N[key]?`<p class="mut" style="font-size:12.5px;margin:6px 0 10px">${esc(N[key])}</p>`:''}</div>`).join('')
+    +rows.map(([key,n])=>`<div class="crit"><div class="row"><span>${esc(n)}</span><b>${bnd(B[key])}</b></div><div class="pbar"><i style="width:${(B[key]||0)/9*100}%"></i></div>${N[key]?`<p class="mut" style="font-size:12.5px;margin:6px 0 10px">${esc(N[key])}</p>`:''}${wrCritDetail(key,r)}</div>`).join('')
     +`<p class="mut" style="font-size:12px;margin-top:6px">${r.words} từ (tối thiểu ${r.min_words}). Band tổng là trung bình 4 tiêu chí, làm tròn đến 0.5.</p></div>`;
   (r.warnings||[]).forEach(w=>{h+=`<p class="err" style="margin:0 2px 14px">${esc(w)}</p>`});
   if((r.strengths_vi||[]).length||(r.priorities_vi||[]).length)
     h+=`<div class="card">`+((r.strengths_vi||[]).length?`<b class="t">Điểm tốt</b>`+r.strengths_vi.map(s=>`<div class="li"><div>${esc(s)}</div></div>`).join(''):'')
       +((r.priorities_vi||[]).length?`<b class="t" style="margin-top:14px">Ưu tiên sửa trước để tăng band</b>`+r.priorities_vi.map((s,i)=>`<div class="li"><div><b>${i+1}.</b> ${esc(s)}</div></div>`).join(''):'')+`</div>`;
   h+=wrAnnot(c);
-  h+=`<div class="card"><div class="row" style="justify-content:space-between"><b class="t" style="margin:0">Bản cải thiện · mục tiêu band ${bnd(im.target)}</b><span class="row" style="gap:6px;flex:none">${spk(im.essay)}<button class="lnk" onclick="wrCopy(this)">Sao chép</button></span></div>
+  h+=vWrImprove(c);
+  if(im.essay)h+=`<div class="card"><div class="row" style="justify-content:space-between"><b class="t" style="margin:0">Bản cải thiện · mục tiêu band ${bnd(im.target)}</b><span class="row" style="gap:6px;flex:none">${spk(im.essay)}<button class="lnk" onclick="wrCopy(this)">Sao chép</button></span></div>
     <p class="mut" style="font-size:12px;margin:6px 0 0">${im.words||wrWords(im.essay)} từ · giữ nguyên ý và cấu trúc của bạn</p>
     <p style="margin-top:10px;white-space:pre-wrap">${esc(im.essay)}</p>`
     +(im.tip_vi?`<p class="mut" style="font-size:12.5px">${esc(im.tip_vi)}</p>`:'')
     +((im.key_changes||[]).length?`<hr><b class="t">Những thay đổi chính</b>`+im.key_changes.map(x=>`<div class="li"><div><span style="text-decoration:line-through;color:var(--bad)">${esc(x.before)}</span><br><b style="color:var(--ok)">${esc(x.after)}</b><br><span class="mut" style="font-size:12px">${esc(x.why_vi)}</span></div></div>`).join(''):'')
     +((im.useful_phrases||[]).length?`<hr><b class="t">Cụm từ nên học</b>`+im.useful_phrases.map(x=>`<div class="li"><div><b>${esc(x.phrase)}</b><br><span class="mut" style="font-size:12px">${esc(x.meaning_vi)}</span></div>${spk(x.phrase)}</div>`).join(''):'')+`</div>`;
   h+=`<div class="row" style="margin-top:6px"><button class="btn s" onclick="wrEdit()">Sửa và chấm lại</button><button class="btn" onclick="wrNew()">Viết bài mới</button></div>`;
+  h+=vWrRevs(c);
+  if(c.id&&c.saved!==false)h+=`<div class="row" style="margin-top:10px"><button class="lnk" style="color:var(--bad)" onclick="wrHDel(wr.cur.id)">${ic('trash',14)} Xóa bài này khỏi lịch sử</button></div>`;
   return h+`<div class="note">${ic('shield',14)}<span>Band ước lượng chỉ mang tính tham khảo, không phải điểm IELTS chính thức.</span></div>`;
 }
 
