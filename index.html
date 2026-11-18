@@ -66,6 +66,7 @@ h1{margin:0;font-size:24px;line-height:1.25;font-weight:700;letter-spacing:-.4px
 .sub{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:11.5px;color:var(--mut);margin:10px 2px 16px}
 .dir{color:var(--pri);font-weight:600}
 .msg{font-size:12px;color:var(--mut);margin:0 2px 14px}
+.wrdz{border:1.5px dashed var(--bd);border-radius:12px;padding:12px;margin-bottom:6px;transition:border-color .15s,background .15s}.wrdz.on{border-color:var(--pri);background:color-mix(in srgb,var(--pri) 8%,transparent)}
 .hint{display:flex;gap:10px;align-items:flex-start;color:var(--mut);font-size:12px;background:var(--card);border:1px dashed var(--bd);border-radius:14px;padding:14px}
 .hint .ic{color:var(--pri)}
 .err{color:var(--bad);font-size:12.5px;margin:0 0 12px}
@@ -374,6 +375,7 @@ const DAY=864e5,IV=[0,1,2,4,8,16];
 
 /* ---- Icon set (nét 2px, 24x24) ---- */
 const IC={
+clip:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
  x:'<path d="M18 6 6 18M6 6l12 12"/>',
  book:'<path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/>',
@@ -1424,9 +1426,34 @@ function wrCount(){
   if(e){e.textContent=n+' từ · tối thiểu '+m+(ok?' ✓':' (còn thiếu '+(m-n)+')');e.className='wcn '+(ok?'ok':'w')}
   if(b)b.disabled=wr.busy||n<30;
 }
-function wrPickImg(inp){
-  const f=inp.files&&inp.files[0];inp.value='';if(!f)return;
-  if(!/^image\//.test(f.type)){wr.err='Hãy chọn một file ảnh (JPG, PNG hoặc WEBP).';render();return}
+function wrPickImg(inp){const f=inp.files&&inp.files[0];inp.value='';if(f)wrSetImg(f)}
+// Ảnh biểu đồ có thể đến từ: chọn file, dán (Ctrl+V / nút "Dán ảnh") hoặc kéo-thả. Tất cả đi qua wrSetImg.
+function wrClipImg(dt){
+  if(!dt)return null;
+  for(const it of Array.from(dt.items||[]))if(it.kind==='file'&&/^image\//.test(it.type)){const f=it.getAsFile();if(f)return f}
+  for(const f of Array.from(dt.files||[]))if(/^image\//.test(f.type))return f;
+  return null;
+}
+document.addEventListener('paste',e=>{
+  if(wr.kind!=='ac1'||wr.busy||!document.getElementById||!document.getElementById('wr_e'))return;   // chỉ khi đang ở form Task 1 Academic
+  const f=wrClipImg(e.clipboardData);if(!f)return;
+  const t=e.target,inText=t&&(t.tagName==='TEXTAREA'||t.tagName==='INPUT');
+  if(inText&&(e.clipboardData.getData('text/plain')||'').trim())return;   // copy từ Word/web có cả chữ lẫn ảnh: dán chữ như bình thường
+  e.preventDefault();wrSetImg(f);
+});
+async function wrPasteBtn(){   // cho điện thoại / người không dùng phím tắt
+  if(!navigator.clipboard||!navigator.clipboard.read){wr.err='Trình duyệt này không cho đọc ảnh từ clipboard. Hãy nhấn Ctrl+V trên trang, hoặc bấm “Chọn ảnh”.';render();return}
+  try{
+    for(const it of await navigator.clipboard.read()){
+      const ty=it.types.find(x=>/^image\//.test(x));
+      if(ty){wrSetImg(await it.getType(ty));return}
+    }
+    wr.err='Clipboard chưa có ảnh. Hãy chụp/copy ảnh biểu đồ trước (Windows: Win+Shift+S) rồi bấm lại.';render();
+  }catch(x){wr.err='Trình duyệt chưa cho phép đọc clipboard. Hãy nhấn Ctrl+V trên trang này để dán ảnh.';render()}
+}
+function wrDrop(e,el){e.preventDefault();el.classList.remove('on');const f=wrClipImg(e.dataTransfer);if(f)wrSetImg(f);else{wr.err='Hãy thả một file ảnh (JPG, PNG hoặc WEBP).';render()}}
+function wrSetImg(f){
+  if(!f||!/^image\//.test(f.type)){wr.err='Hãy chọn một file ảnh (JPG, PNG hoặc WEBP).';render();return}
   const url=URL.createObjectURL(f),im=new Image();
   im.onload=()=>{   // thu nhỏ còn tối đa 1600px để gửi nhanh
     const s=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement('canvas');
@@ -1491,8 +1518,8 @@ function vWrForm(){
   <div class="sub"><span>Đề bài</span>${WR_SAMPLES[wr.kind]?`<button class="lnk" onclick="wrSample()">${ic('shuf',13)} Gợi ý đề</button>`:''}</div>
   <textarea class="f" id="wr_q" rows="5" oninput="wr.q=this.value;wrSaveDraft()" placeholder="${wr.kind==='ac1'?'Dán đề bài, ví dụ: The chart below shows… Summarise the information by selecting and reporting the main features…':'Dán đề bài vào đây, hoặc bấm “Gợi ý đề”.'}">${esc(wr.q)}</textarea>`;
   if(wr.kind==='ac1')h+=`<label class="fl">Ảnh biểu đồ / bảng số liệu</label>`+(wr.imgUrl
-    ?`<div class="row" style="align-items:flex-start;margin-bottom:12px"><img src="${wr.imgUrl}" alt="Biểu đồ" style="max-width:min(100%,320px);max-height:220px;border-radius:12px;border:1px solid var(--bd)"><button class="lnk" onclick="wrImgClear()">Xóa ảnh</button></div>`
-    :`<label class="btn s sm" style="display:inline-flex;gap:8px;cursor:pointer;margin-bottom:6px">${ic('up',16)} Chọn ảnh<input type="file" accept="image/*" hidden onchange="wrPickImg(this)"></label><p class="msg">${wr.parent&&wr.pinfo&&wr.pinfo.img?'Sẽ dùng lại biểu đồ đã lưu của bài gốc, hoặc chọn ảnh mới.':'Nên đính kèm ảnh để chấm đúng độ chính xác số liệu của Task Achievement.'}</p>`);
+    ?`<div class="row" style="align-items:flex-start;margin-bottom:12px"><img src="${wr.imgUrl}" alt="Biểu đồ" style="max-width:min(100%,320px);max-height:220px;border-radius:12px;border:1px solid var(--bd)"><div><button class="lnk" onclick="wrImgClear()">Xóa ảnh</button><p class="msg" style="margin:6px 0 0">Nhấn Ctrl+V để thay bằng ảnh khác.</p></div></div>`
+    :`<div class="wrdz" ondragover="event.preventDefault();this.classList.add('on')" ondragleave="this.classList.remove('on')" ondrop="wrDrop(event,this)"><div class="row" style="flex-wrap:wrap;gap:8px"><button class="btn s sm" style="display:inline-flex;gap:8px" onclick="wrPasteBtn()">${ic('clip',16)} Dán ảnh</button><label class="btn s sm" style="display:inline-flex;gap:8px;cursor:pointer">${ic('up',16)} Chọn ảnh<input type="file" accept="image/*" hidden onchange="wrPickImg(this)"></label></div><p class="msg" style="margin:8px 0 0">Chụp màn hình biểu đồ (Win+Shift+S) rồi nhấn <b>Ctrl+V</b> ở bất kỳ đâu trên trang, hoặc kéo-thả ảnh vào khung này.</p></div><p class="msg">${wr.parent&&wr.pinfo&&wr.pinfo.img?'Sẽ dùng lại biểu đồ đã lưu của bài gốc, hoặc chọn ảnh mới.':'Nên đính kèm ảnh để chấm đúng độ chính xác số liệu của Task Achievement.'}</p>`);
   h+=`<label class="fl" for="wr_e">Bài viết của bạn</label>
   <textarea class="f" id="wr_e" rows="15" oninput="wr.essay=this.value;wrCount();wrSaveDraft()" placeholder="Viết bài bằng tiếng Anh ở đây…">${esc(wr.essay)}</textarea>
   <div class="wcn ${ok?'ok':'w'}" id="wr_wc">${n} từ · tối thiểu ${m}${ok?' ✓':' (còn thiếu '+(m-n)+')'}</div>`;
