@@ -348,6 +348,8 @@ nav button.on{color:var(--pri);background:var(--tint)}
 .pqi .q{display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1;min-width:0}
 .pqi .pill{flex:none}
 .qh{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;color:var(--mut);margin:-4px 2px 14px}
+.smp ol,.smp ul{margin:6px 0 0;padding-left:20px;font-size:13px}.smp li{margin:3px 0}
+.smp .ans{margin:10px 0 0;white-space:pre-wrap;font-size:14px;line-height:1.65}
 .hgb{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left;color:var(--tx)}
 .hgq{font-size:13.5px;font-weight:600;margin:6px 0 4px;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .hga{margin-top:10px;border-top:1px solid var(--bd)}
@@ -1002,6 +1004,46 @@ function qDel(id){if(!confirm('Xóa câu hỏi này?'))return;admCall('/question
 
 /* ---- Màn hình Speaking ---- */
 const spCfgCard=c=>(DEV_CFG&&sp.cfg)?`<div class="card"><label class="fl" for="sp_url">Máy chủ chấm điểm (https://…)</label><input class="f" id="sp_url" style="margin:0" value="${esc(c.url||'')}" onchange="spSaveCfg()" autocapitalize="off"></div>`:'';
+/* ---- Gợi ý trả lời + câu trả lời mẫu band 8.0. Máy chủ lưu mẫu dùng chung: câu đã có mẫu thì hiện ngay, không tốn lượt. ---- */
+const SPS={};
+const spSmK=q=>sp.part+'|'+q.text;
+function spSmOpen(){
+  const q=curQ();if(!q)return;const k=spSmK(q),s=SPS[k]||(SPS[k]={});
+  s.open=!s.open;if(s.open&&!s.d&&!s.busy)spSmLoad(false);else render();
+}
+async function spSmLoad(fresh){
+  const q=curQ();if(!q)return;const k=spSmK(q),s=SPS[k]||(SPS[k]={open:true});
+  if(s.busy)return;s.busy=true;s.err='';render();
+  const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),120000);
+  try{s.d=await api('/questions/sample',{method:'POST',json:{part:sp.part,question:q.text,fresh:!!fresh},signal:ctl.signal});if(fresh)s.show=true}
+  catch(e){if(!e.auth)s.err=e.name==='AbortError'?'Quá thời gian chờ, hãy thử lại.':e.message}
+  clearTimeout(to);s.busy=false;render();
+}
+function spSmT(f){const q=curQ();const s=q&&SPS[spSmK(q)];if(s){s[f]=!s[f];render()}}
+function spSampleCard(q){
+  if(!q)return '';
+  const s=SPS[spSmK(q)]||{},d=s.d;
+  let h=`<div class="card smp"><button class="hgb" onclick="spSmOpen()" aria-expanded="${!!s.open}"><span class="row" style="gap:8px"><span style="color:var(--pri);display:flex">${ic('spark',16)}</span><b style="font-size:13.5px">Gợi ý & câu trả lời mẫu</b><span class="tg">Band 8.0</span></span><span class="mut" style="flex:none">${ic(s.open?'chevup':'down',16)}</span></button>`;
+  if(!s.open)return h+`</div>`;
+  if(s.busy&&!d)return h+`<div class="spin" style="margin-top:16px"></div><p class="mut" style="text-align:center;font-size:12.5px">Đang soạn gợi ý… khoảng 10–30 giây</p></div>`;
+  if(!d)return h+(s.err?`<p class="err" style="margin:12px 0 10px">${esc(s.err)}</p>`:'')+`<button class="btn s sm" style="margin-top:6px" onclick="spSmLoad(false)">Thử lại</button></div>`;
+  h+=`<p class="mut" style="font-size:12px;margin:10px 0 0">Thử tự trả lời theo gợi ý trước, rồi mới xem câu trả lời mẫu.</p>`;
+  if((d.ideas_vi||[]).length)h+=`<hr><b class="t">Ý tưởng trả lời</b><ul>${d.ideas_vi.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
+  if((d.outline_vi||[]).length)h+=`<hr><b class="t">Cách triển khai</b><ol>${d.outline_vi.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`;
+  h+=`<hr>`;
+  if(!s.show)h+=`<button class="btn sm" onclick="spSmT('show')">Xem câu trả lời mẫu</button>`;
+  else{
+    h+=`<div class="row" style="justify-content:space-between"><b class="t" style="margin:0">Câu trả lời mẫu · band ${bnd(d.target||8)}</b>${spk(d.sample_answer)}</div>
+    <p class="mut" style="font-size:12px;margin:4px 0 0">${d.words||''} từ${sp.part===2?' · khoảng 1,5–2 phút nói':''}</p>
+    <p class="ans">${esc(d.sample_answer)}</p>`;
+    if(d.sample_vi)h+=`<button class="lnk" style="margin-top:8px" onclick="spSmT('vi')">${ic('lang',13)} ${s.vi?'Ẩn bản dịch':'Xem bản dịch'}</button>`+(s.vi?`<p class="mut" style="white-space:pre-wrap;font-size:13px;margin:8px 0 0">${esc(d.sample_vi)}</p>`:'');
+    if(d.band8_vi)h+=`<p class="msg" style="margin:12px 0 0">${esc(d.band8_vi)}</p>`;
+    if((d.useful_phrases||[]).length)h+=`<hr><b class="t">Cụm từ nên học</b>`+d.useful_phrases.map(p=>`<div class="li"><div><b>${esc(p.phrase)}</b><br><span class="mut" style="font-size:12px">${esc(p.meaning_vi)}</span></div>${spk(p.phrase)}</div>`).join('');
+    h+=`<div class="row" style="gap:16px;margin-top:14px"><button class="lnk" onclick="spSmT('show')">Ẩn câu trả lời mẫu</button><button class="lnk" ${s.busy?'disabled':''} onclick="spSmLoad(true)">${s.busy?'Đang tạo bản khác…':'Tạo bản khác'}</button></div>`;
+  }
+  if(s.err)h+=`<p class="err" style="margin:10px 0 0">${esc(s.err)}</p>`;
+  return h+`</div>`;
+}
 function spCues(t){
   const m=t.match(/you should say:?/i);if(!m)return null;
   const main=t.slice(0,m.index).trim();
@@ -1027,6 +1069,7 @@ function vSp(){
       +(sp.part===2?`<div class="prep">${ic('clock',14)} Chuẩn bị 1 phút · Nói 1–2 phút</div>`:'')+`</div>`;
   }else h+=`<div class="card"><p class="mut">Phần này chưa có câu hỏi nào.</p></div>`;
   h+=spQHist(q);
+  h+=spSampleCard(q);
   h+=`<div class="micw">`+(sp.busy
     ?`<div class="spin"></div><b>Đang chấm điểm…</b><p>${sp.ahead>0?'Đang xếp hàng, còn '+sp.ahead+' bài phía trước. ':''}Có thể mất 30–90 giây. Đừng đóng ứng dụng.</p><button class="btn s" style="width:auto;margin:14px auto 0" onclick="spStop()">${ic('x',14)} Dừng chấm</button>`
     :spMicHtml(q))+`</div>`;
